@@ -1,0 +1,209 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemenju-showcase}[2026/11/11 v0.1.0 NJU showcase]
+
+% Showcase style: the shared implementation supplies fonts, palette,
+% components, speaker and footline setters; this layer replaces every visible
+% template with a gradient cover, navigational section pages, a progress
+% footline.
+\RequirePackage[nobackground,tutorial,sectionpages]{beamerthemeNJUBase}
+
+\definecolor{NJUDeep}{HTML}{240A2C}
+\definecolor{NJUBright}{HTML}{8E2A86}
+
+\mode<presentation>
+\setbeamerfont{title}{family=\sffamily,series=\bfseries,size=\fontsize{22}{28.5}\selectfont}
+\setbeamerfont{subtitle}{family=\sffamily,series=\mdseries,size=\fontsize{11.5}{15}\selectfont}
+\setbeamerfont{section title}{family=\sffamily,series=\bfseries,size=\fontsize{21.5}{28}\selectfont}
+\setbeamerfont{end title}{family=\sffamily,series=\bfseries,size=\fontsize{30}{36}\selectfont}
+
+\newcommand{\nju@two}[1]{\ifnum#1<10 0\fi\number#1}
+
+% Number of sections, counted from the previous run's .toc; it drives the
+% footline dots and stays zero on the first pass.
+\newcount\nju@sectotal
+\AtBeginDocument{%
+  \begingroup
+    \def\beamer@endinputifotherversion#1{}%
+    \def\beamer@sectionintoc#1#2#3#4#5{\global\advance\nju@sectotal\@ne}%
+    \def\beamer@subsectionintoc#1#2#3#4#5#6{}%
+    \def\beamer@subsubsectionintoc#1#2#3#4#5#6#7{}%
+    \makeatletter\@input{\jobname.toc}%
+  \endgroup}
+
+% Dark field shared by the cover, section and end frames.
+\newcommand{\nju@showfield}{%
+  \shade[left color=NJUDeep,right color=NJUBright!62!NJUPrimary,shading angle=62]
+    (current page.south west) rectangle (current page.north east);
+  \node[inner sep=0pt] at (current page.center)
+    {\includegraphics[width=\paperwidth,height=\paperheight]{\NJUasset{nju-ribbons.pdf}}};}
+
+% Hollow display numerals: PDF text render mode 1 strokes the glyph outline.
+\newcommand{\nju@outline}[1]{%
+  \special{pdf:literal direct 1 Tr 0.7 w 0.914 0.769 0.416 RG}#1%
+  \special{pdf:literal direct 0 Tr}}
+
+% ---- Canvas, frame title, footline ----------------------------------------
+\setbeamertemplate{background}{%
+  \begin{tikzpicture}
+    \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
+    \clip (0,0) rectangle (\paperwidth,\paperheight);
+    \node[opacity=.035,anchor=south east,inner sep=0pt] at (\paperwidth+.55cm,-1.05cm)
+      {\includegraphics[height=5.4cm]{\NJUasset{nju-emblem.pdf}}};
+  \end{tikzpicture}}
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.04cm,dp=0.22cm]{frametitle}\end{beamercolorbox}%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[NJUPrimary] ([yshift=-.30cm]current page.north west)
+      rectangle ([xshift=.33cm,yshift=-1.12cm]current page.north west);
+    \fill[NJURule] ([xshift=.33cm,yshift=-.30cm]current page.north west)
+      rectangle ([xshift=.40cm,yshift=-1.12cm]current page.north west);
+    \ifnum\c@section>0
+      \node[anchor=base west,inner sep=0pt,text=NJURule!78!black,
+        font=\sffamily\bfseries\fontsize{5.8}{6.4}\selectfont]
+        at ([xshift=.72cm,yshift=-.49cm]current page.north west)
+        {\nju@two{\c@section}\hspace{.5em}\textcolor{NJUMuted}{\mdseries\insertsection}};
+    \fi
+    \node[anchor=base west,inner sep=0pt,text=NJUAccent,font=\usebeamerfont{frametitle}]
+      at ([xshift=.72cm,yshift=-.99cm]current page.north west) {\insertframetitle};
+    \node[anchor=north east,inner sep=0pt] at ([xshift=-.72cm,yshift=-.27cm]current page.north east)
+      {\includegraphics[height=.80cm]{\NJUasset{nju-emblem.pdf}}};
+    \shade[left color=NJUPrimary,right color=NJURule]
+      ([xshift=.72cm,yshift=-1.185cm]current page.north west)
+      rectangle ([xshift=-.72cm,yshift=-1.205cm]current page.north east);
+  \end{tikzpicture}%
+}
+
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=.40cm,dp=.16cm]{footline}\end{beamercolorbox}%
+  \begin{tikzpicture}[remember picture,overlay]
+    \pgfmathsetmacro{\nju@progress}{min(1,\insertframenumber/max(1,\inserttotalframenumber))}
+    \fill[NJUSoft] (current page.south west) rectangle ([yshift=1.7pt]current page.south east);
+    \shade[left color=NJUPrimary,right color=NJURule] (current page.south west)
+      rectangle ([xshift=\nju@progress\paperwidth,yshift=1.7pt]current page.south west);
+    \node[anchor=base west,inner sep=0pt,text=NJUMuted,font=\sffamily\fontsize{5.8}{7}\selectfont]
+      at ([xshift=.72cm,yshift=.21cm]current page.south west) {\nju@footleft};
+    \ifnum\nju@sectotal>0
+      \edef\nju@n{\the\nju@sectotal}%
+      \foreach \nju@i in {1,...,\nju@n} {
+        \pgfmathsetmacro{\nju@dx}{(\nju@i-(\nju@n+1)/2)*0.21}
+        \ifnum\nju@i<\c@section
+          \fill[NJUPrimary] ([xshift=\nju@dx cm,yshift=.265cm]current page.south) circle (1.25pt);
+        \else\ifnum\nju@i=\c@section
+          \fill[NJURule] ([xshift=\nju@dx cm,yshift=.265cm]current page.south) circle (2.1pt);
+        \else
+          \fill[NJUMuted!45] ([xshift=\nju@dx cm,yshift=.265cm]current page.south) circle (1.25pt);
+        \fi\fi}
+    \fi
+    \node[anchor=base east,inner sep=0pt,text=NJUMuted,font=\sffamily\fontsize{5.8}{7}\selectfont]
+      at ([xshift=-.72cm,yshift=.21cm]current page.south east)
+      {\nju@footright\hspace{.8em}{\color{NJUAccent}\bfseries\insertframenumber}\,/\,\inserttotalframenumber};
+  \end{tikzpicture}%
+}
+
+% ---- Cover -----------------------------------------------------------------
+\setbeamertemplate{title page}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \nju@showfield
+    \node[opacity=.24,inner sep=0pt,anchor=south east] at ([xshift=-.60cm]current page.south east)
+      {\includegraphics[width=7.4cm]{\NJUasset{nju-skyline-white.pdf}}};
+    \node[anchor=north west,inner sep=0pt] at ([xshift=.90cm,yshift=-.62cm]current page.north west)
+      {\includegraphics[height=.98cm]{\NJUasset{nju-lockup-white.pdf}}};
+    \node[anchor=north east,inner sep=0pt,text=white!82!NJUPrimary,font=\usebeamerfont{date}]
+      at ([xshift=-.90cm,yshift=-.85cm]current page.north east) {\insertdate};
+    \fill[NJUGoldLight] ([xshift=.90cm,yshift=-2.86cm]current page.north west)
+      rectangle ([xshift=2.05cm,yshift=-2.94cm]current page.north west);
+    \node[anchor=north west,text width=.74\paperwidth,align=left,inner sep=0pt]
+      at ([xshift=.90cm,yshift=-3.20cm]current page.north west)
+      {{\usebeamerfont{title}\color{white}\nju@displaywrap\inserttitle\par}\vspace{7pt}%
+       {\usebeamerfont{subtitle}\color{NJUGoldLight}\nju@displaywrap\insertsubtitle\par}};
+    \node[anchor=south west,inner sep=0pt,align=left] (nju@sp)
+      at ([xshift=1.18cm,yshift=.98cm]current page.south west)
+      {\tcbox[on line,size=minimal,boxrule=0pt,arc=1.5pt,outer arc=1.5pt,colback=NJUGoldLight,coltext=NJUDeep,
+         left=.14cm,right=.14cm,top=.04cm,bottom=.04cm,
+         fontupper=\sffamily\bfseries\fontsize{6.4}{7.6}\selectfont]{\nju@speakerlabel}%
+       \hspace{.22cm}{\sffamily\bfseries\fontsize{10.5}{13}\selectfont\color{white}\nju@speakername}\\[3pt]
+       {\sffamily\fontsize{8}{11}\selectfont\color{white!80!NJUPrimary}\nju@speakerdetail}};
+    \draw[fill=white,fill opacity=.09,draw=white,draw opacity=.30,line width=.4pt,rounded corners=3pt]
+      ([xshift=-.28cm,yshift=-.22cm]nju@sp.south west) rectangle ([xshift=.34cm,yshift=.22cm]nju@sp.north east);
+  \end{tikzpicture}%
+}
+
+% ---- Section pages ---------------------------------------------------------
+% The right-hand list is rebuilt from the .toc and highlights the current
+% section, so every section page doubles as an agenda.
+\newcommand{\nju@showtoc}{%
+  \begingroup
+    \def\beamer@endinputifotherversion##1{}%
+    \def\beamer@sectionintoc##1##2##3##4##5{%
+      \ifnum##1=\c@section
+        {\color{NJUGoldLight}\bfseries\nju@two{##1}\hspace{.7em}\color{white}##2\par}%
+      \else
+        {\color{white!42!NJUPrimary}\nju@two{##1}\hspace{.7em}##2\par}%
+      \fi\vspace{6pt}}%
+    \def\beamer@subsectionintoc##1##2##3##4##5##6{}%
+    \def\beamer@subsubsectionintoc##1##2##3##4##5##6##7{}%
+    \makeatletter\@input{\jobname.toc}%
+  \endgroup}
+
+\setbeamertemplate{section page}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \nju@showfield
+    \node[opacity=.06,inner sep=0pt,anchor=east] at ([xshift=1.7cm,yshift=.5cm]current page.east)
+      {\includegraphics[height=1.28\paperheight]{\NJUasset{nju-emblem-white.pdf}}};
+    \node[anchor=base west,inner sep=0pt,font=\sffamily\bfseries\fontsize{66}{66}\selectfont,text=NJUGoldLight]
+      at ([xshift=.98cm,yshift=.70cm]current page.west) {\nju@outline{\nju@two{\c@section}}};
+    \fill[NJUGoldLight] ([xshift=1.10cm,yshift=.26cm]current page.west)
+      rectangle ([xshift=2.25cm,yshift=.19cm]current page.west);
+    \node[anchor=north west,inner sep=0pt,text=white,align=left,text width=.545\paperwidth,
+      font=\usebeamerfont{section title}]
+      at ([xshift=1.10cm,yshift=-.12cm]current page.west) {\nju@displaywrap\insertsection};
+    \node[anchor=west,inner sep=0pt,align=left,text width=.31\paperwidth,
+      font=\sffamily\fontsize{9.2}{12}\selectfont] (nju@toc)
+      at ([xshift=.635\paperwidth]current page.west) {\nju@showtoc};
+    \draw[white,opacity=.30,line width=.4pt] ([xshift=-.36cm,yshift=.10cm]nju@toc.north west)
+      -- ([xshift=-.36cm,yshift=-.02cm]nju@toc.south west);
+  \end{tikzpicture}%
+}
+
+\renewcommand{\NJUsectionframe}[2]{%
+  \begin{frame}[plain,noframenumbering]
+    \begin{tikzpicture}[remember picture,overlay]
+      \nju@showfield
+      \node[text=white,align=center,text width=.86\paperwidth,
+        font=\usebeamerfont{end title}] at ([yshift=.30cm]current page.center)
+        {\nju@displaywrap #1\\[9pt]{\usebeamerfont{section subtitle}\color{NJUGoldLight}#2}};
+    \end{tikzpicture}
+  \end{frame}}
+
+% ---- End frame -------------------------------------------------------------
+\renewcommand{\NJUendframe}[2][Thank You]{%
+  \begin{frame}[plain,noframenumbering]
+    \begin{tikzpicture}[remember picture,overlay]
+      \nju@showfield
+      \node[opacity=.20,inner sep=0pt,anchor=south] at (current page.south)
+        {\includegraphics[width=6.4cm]{\NJUasset{nju-skyline-white.pdf}}};
+      \node[text=white,inner sep=0pt,font=\usebeamerfont{end title}]
+        at ([yshift=1.55cm]current page.center) {#1};
+      \fill[NJUGoldLight] ([xshift=-.58cm,yshift=.90cm]current page.center)
+        rectangle ([xshift=.58cm,yshift=.83cm]current page.center);
+      \node[text=white!86!NJUPrimary,inner sep=0pt,align=center,text width=.80\paperwidth,
+        font=\sffamily\fontsize{10}{14}\selectfont] at ([yshift=.38cm]current page.center) {#2};
+      \node[anchor=north west,inner sep=0pt] at ([xshift=.90cm,yshift=-.62cm]current page.north west)
+        {\includegraphics[height=.98cm]{\NJUasset{nju-lockup-white.pdf}}};
+      \node[anchor=north east,inner sep=0pt,opacity=.92] at ([xshift=-.90cm,yshift=-.66cm]current page.north east)
+        {\includegraphics[height=.86cm]{\NJUasset{nju-motto-white.pdf}}};
+    \end{tikzpicture}
+  \end{frame}}
+
+% ---- Lists -----------------------------------------------------------------
+\setbeamertemplate{itemize item}{%
+  \tikz[baseline=-.62ex]{\fill[NJUPrimary] (0,0) circle (1.35pt);
+    \draw[NJURule,line width=.4pt] (0,0) circle (2.5pt);}}
+\setbeamertemplate{itemize subitem}{\tikz[baseline=-.62ex]\fill[NJURule] (0,0) circle (1.2pt);}
+\setbeamertemplate{enumerate item}{%
+  \tikz[baseline=(n.base)]\node[circle,fill=NJUPrimary,text=white,font=\sffamily\scriptsize\bfseries,
+  minimum size=1.55em,inner sep=0pt] (n) {\insertenumlabel};}
+
+\mode<all>

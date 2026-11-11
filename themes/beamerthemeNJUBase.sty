@@ -1,0 +1,496 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeNJUBase}[2026/11/11 v0.1.0 NJU Beamer theme]
+
+\RequirePackage{iftex}
+\ifXeTeX\else
+  \PackageError{beamerthemeNJUBase}{NJU-Beamer requires XeLaTeX}{Compile with xelatex or latexmk -xelatex.}
+\fi
+
+\RequirePackage{xeCJK}
+\RequirePackage{lmodern}
+\RequirePackage{tikz}
+\RequirePackage{etoolbox}
+\RequirePackage{listings}
+\RequirePackage{ragged2e}
+\RequirePackage{tabularx}
+\RequirePackage{tabularray}
+\RequirePackage{xurl}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins}
+
+% Runtime assets are resolved through Kpathsea (TEXINPUTS), so the same source
+% compiles inside this repository and from any project that adds shared-assets.
+\newcommand{\NJUasset}[1]{#1}
+
+\IfFontExistsTF{Noto Serif CJK SC}{}{%
+  \PackageError{beamerthemeNJUBase}{Noto CJK system fonts were not found}
+    {Install the Noto CJK font package (for example, fonts-noto-cjk on Debian/Ubuntu).}%
+}
+\setCJKmainfont[AutoFakeSlant=0.18]{Noto Serif CJK SC}
+\setCJKsansfont[AutoFakeSlant=0.18]{Noto Sans CJK SC}
+\setCJKmonofont[AutoFakeSlant=0.18]{Noto Sans Mono CJK SC}
+
+\newif\ifnju@background
+\newif\ifnju@report
+\newif\ifnju@sectionpages
+\nju@sectionpagestrue
+
+\DeclareOptionBeamer{background}{\nju@backgroundtrue}
+\DeclareOptionBeamer{nobackground}{\nju@backgroundfalse}
+\DeclareOptionBeamer{tutorial}{\nju@reportfalse}
+\DeclareOptionBeamer{report}{\nju@reporttrue}
+\DeclareOptionBeamer{sectionpages}{\nju@sectionpagestrue}
+\DeclareOptionBeamer{nosectionpages}{\nju@sectionpagesfalse}
+\ExecuteOptionsBeamer{background,tutorial,sectionpages}
+\ProcessOptionsBeamer
+
+% NJU purple is the official CMYK 50/100/0/40 (南京大学视觉形象规范化标准,
+% also njuvisual's njuviolet) rendered to sRGB; the gold rule echoes the
+% purple-and-gold admission letter and the VI auxiliary yellow.
+\definecolor{NJUPurple}{HTML}{5C0F56}
+\definecolor{NJUPurpleAccent}{HTML}{6E1F68}
+\definecolor{NJUPurpleSoft}{HTML}{EFE4EE}
+\definecolor{NJUGold}{HTML}{C59B3E}
+\definecolor{NJUGoldLight}{HTML}{E9C46A}
+\definecolor{NJUInk}{HTML}{1E1520}
+\definecolor{NJUMuted}{HTML}{8C8C8C}
+\definecolor{NJUCode}{HTML}{F7F1F6}
+\definecolor{NJUGreen}{HTML}{6F8F42}
+\definecolor{NJUOrange}{HTML}{C5681F}
+\definecolor{NJUCalloutBlue}{HTML}{4A6FA5}
+\definecolor{NJUCalloutRed}{HTML}{B03A48}
+\definecolor{NJUCalloutGreen}{HTML}{5E8C4A}
+\definecolor{NJUCalloutGold}{HTML}{B8891F}
+\definecolor{NJUCalloutBlack}{HTML}{434C5E}
+
+\colorlet{NJUPrimary}{NJUPurple}
+\colorlet{NJUAccent}{NJUPurpleAccent}
+\colorlet{NJUSoft}{NJUPurpleSoft}
+\colorlet{NJUText}{NJUInk}
+\colorlet{NJURule}{NJUGold}
+
+\mode<presentation>
+\usefonttheme{professionalfonts}
+\useinnertheme{rectangles}
+\setbeamertemplate{navigation symbols}{}
+\setbeamersize{text margin left=0.72cm,text margin right=0.72cm}
+
+\ifnju@background
+  \setbeamertemplate{background}{%
+    \includegraphics[width=\paperwidth,height=\paperheight]{\NJUasset{nju-master.pdf}}%
+  }
+  \setbeamercolor{normal text}{fg=NJUText}
+  \setbeamercolor{frametitle}{fg=NJUAccent}
+\else
+  \setbeamercolor{normal text}{fg=NJUText,bg=white}
+  \setbeamercolor{frametitle}{fg=NJUAccent,bg=white}
+\fi
+
+\setbeamercolor{structure}{fg=NJUAccent}
+\setbeamercolor{alerted text}{fg=NJUAccent}
+\setbeamercolor{title}{fg=NJUAccent}
+\setbeamercolor{subtitle}{fg=NJUAccent}
+\setbeamercolor{section page}{fg=white,bg=NJUPrimary}
+\setbeamercolor{itemize item}{fg=NJUAccent}
+\setbeamercolor{itemize subitem}{fg=NJURule}
+\setbeamercolor{enumerate item}{fg=white,bg=NJUPrimary}
+\setbeamercolor{caption name}{fg=NJUAccent}
+
+% Typography preset shared with VSP-Beamer (VSP-Marp 1280x720 canvas mapped
+% to the 453.543pt Beamer page width).
+\newcommand{\njubodyfont}{\fontsize{8.86}{12.85}\selectfont}
+\newcommand{\njudisplayfont}{\fontsize{19.49}{23.38}\selectfont}
+\newcommand{\njusubtitlefont}{\fontsize{14.88}{17.85}\selectfont}
+\newcommand{\njuheadingfont}{\fontsize{13.47}{16.16}\selectfont}
+\newcommand{\njusubheadingfont}{\fontsize{10.63}{12.76}\selectfont}
+\newcommand{\njusectionfont}{\fontsize{35.43}{42.52}\selectfont}
+\newcommand{\njufooterfont}{\fontsize{7.80}{9.45}\selectfont}
+\newcommand{\njupagefont}{\fontsize{4.25}{5.10}\selectfont}
+\newcommand{\njucodefont}{\fontsize{7.09}{8.51}\selectfont}
+\newcommand{\njumetafont}{\fontsize{9.92}{13.69}\selectfont}
+
+\setbeamerfont{normal text}{family=\rmfamily,size=\njubodyfont}
+\setbeamerfont{title}{family=\sffamily,series=\bfseries,size=\njudisplayfont}
+\setbeamerfont{subtitle}{family=\sffamily,series=\bfseries,size=\njusubtitlefont}
+\setbeamerfont{author}{family=\sffamily,size=\njubodyfont}
+\setbeamerfont{institute}{family=\sffamily,size=\njusubheadingfont}
+\setbeamerfont{date}{family=\sffamily,size=\njusubheadingfont}
+\setbeamerfont{frametitle}{family=\sffamily,series=\bfseries,size=\njuheadingfont}
+\setbeamerfont{section title}{family=\sffamily,series=\bfseries,size=\njusectionfont}
+\setbeamerfont{section subtitle}{family=\sffamily,size=\njubodyfont}
+\setbeamerfont{end title}{family=\sffamily,series=\bfseries,size=\njudisplayfont}
+\setbeamerfont{end subtitle}{family=\sffamily,size=\njubodyfont}
+\setbeamerfont{footline}{family=\sffamily,size=\njufooterfont}
+\setbeamerfont{page number}{family=\sffamily,size=\njupagefont}
+
+\setbeamertemplate{itemize item}{\raise0.15ex\hbox{\color{NJUAccent}\rule{0.62ex}{0.62ex}}}
+\setbeamertemplate{itemize subitem}{\raise0.15ex\hbox{\color{NJURule}\scriptsize$\blacktriangleright$}}
+\setbeamertemplate{enumerate item}{%
+  \tikz[baseline=(n.base)]\node[fill=NJUPrimary,text=white,font=\sffamily\scriptsize\bfseries,
+  minimum size=1.65em,inner sep=0pt,rounded corners=0.8pt] (n) {\insertenumlabel};}
+
+% \alert renders accent-colored bold; \textbf keeps its standard meaning.
+\setbeamerfont{alerted text}{series=\bfseries}
+
+% Beamer sets \parskip to zero; restore a 6pt gap between paragraphs.
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.92cm,dp=0.20cm,leftskip=0.72cm,rightskip=0.72cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}%
+  \begin{tikzpicture}[remember picture,overlay]
+    \ifnju@background
+      % Stop short of the lockup printed in the background's top-right corner.
+      \draw[NJURule,line width=0.55pt] ([xshift=0.72cm,yshift=-1.11cm]current page.north west)
+        -- ([xshift=.69\paperwidth,yshift=-1.11cm]current page.north west);
+    \else
+      % Without the background, a small emblem closes the rule at the right.
+      \draw[NJURule,line width=0.55pt] ([xshift=0.72cm,yshift=-1.11cm]current page.north west)
+        -- ([xshift=-1.55cm,yshift=-1.11cm]current page.north east);
+      \node[anchor=south east,inner sep=0pt] at ([xshift=-0.72cm,yshift=-1.06cm]current page.north east)
+        {\includegraphics[height=.80cm]{\NJUasset{nju-emblem.pdf}}};
+    \fi
+  \end{tikzpicture}%
+}
+
+\setbeamertemplate{footline}{%
+  \leavevmode
+  \ifnju@background
+    % The background artwork occupies both bottom corners: the footline box
+    % is 1 cm tall so body text ends above it, and only the page number sits
+    % between the corners. The three-slot row renders on the end frame.
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=0.80cm,dp=0.20cm,center]{footline}%
+        \tikz[baseline=(p.base)]\node[draw=NJURule,text=NJUMuted,rounded corners=1.3pt,
+        inner xsep=4pt,inner ysep=1.5pt,font=\usebeamerfont{page number}] (p)
+        {\insertframenumber\,/\,\inserttotalframenumber};
+      \end{beamercolorbox}%
+    }
+  \else
+    \hbox{%
+      \begin{beamercolorbox}[wd=.38\paperwidth,ht=0.31cm,dp=0.10cm,leftskip=.72cm]{footline}%
+        \color{NJUMuted}\usebeamerfont{footline}\nju@footleft
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.24\paperwidth,ht=0.31cm,dp=0.10cm,center]{footline}%
+        \color{NJUMuted}\usebeamerfont{footline}\nju@footmid
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.38\paperwidth,ht=0.31cm,dp=0.10cm,rightskip=.72cm plus1fil]{footline}%
+        \hfill\color{NJUMuted}\usebeamerfont{footline}\nju@footright
+      \end{beamercolorbox}%
+    }
+  \fi
+}
+
+\setbeamertemplate{title page}{%
+  \ifnju@report
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[white] (current page.south west) rectangle (current page.north east);
+      \node[anchor=north east,inner sep=0pt] at ([xshift=-.72cm,yshift=-.40cm]current page.north east)
+        {\includegraphics[height=.95cm]{\NJUasset{nju-lockup.pdf}}};
+      \node[fill=NJUPrimary,text=white,rounded corners=5pt,text width=.82\paperwidth,
+        minimum height=.29\paperheight,align=center,inner sep=12pt]
+        at ([yshift=.55cm]current page.center) {\usebeamerfont{title}\inserttitle\\[4pt]
+        {\usebeamerfont{subtitle}\insertsubtitle}};
+      \node[align=left,text=NJUText] at ([yshift=-1.65cm]current page.center)
+        {\NJUspeakerblock};
+      \node[text=NJUMuted] at ([yshift=.42cm]current page.south)
+        {\usebeamerfont{date}\insertdate};
+    \end{tikzpicture}%
+  \else
+    \begin{tikzpicture}[remember picture,overlay]
+      % White left field and a diagonal purple right field carrying the lockup.
+      \fill[white] (current page.south west) rectangle (current page.north east);
+      \fill[NJUPrimary] ([xshift=.83\paperwidth]current page.north west) --
+        (current page.north east) -- (current page.south east) --
+        ([xshift=.645\paperwidth]current page.south west) -- cycle;
+      \node[anchor=north west,fill=NJUPrimary,minimum width=1.25cm,minimum height=1.25cm,inner sep=.08cm]
+        at ([xshift=1.00cm]current page.north west)
+        {\includegraphics[height=1.09cm]{\NJUasset{nju-emblem-white.pdf}}};
+      \node[anchor=north west,text width=.60\paperwidth,align=left,text=NJUAccent,inner sep=0pt]
+        at ([xshift=.875cm,yshift=-1.725cm]current page.north west)
+        {{\usebeamerfont{title}\nju@displaywrap\inserttitle\par}\vspace{8pt}%
+         {\usebeamerfont{subtitle}\nju@displaywrap\insertsubtitle\par}};
+      \node[anchor=south west,inner sep=0pt]
+        at ([xshift=.875cm,yshift=.70cm]current page.south west) {\NJUspeakerblock};
+      \node[anchor=south east,inner sep=0pt] at ([xshift=-.35cm,yshift=.30cm]current page.south east)
+        {\includegraphics[width=4.20cm]{\NJUasset{nju-lockup-white.pdf}}};
+      \node[anchor=north east,text=white,inner sep=0pt,font=\usebeamerfont{date}]
+        at ([xshift=-.45cm,yshift=-.45cm]current page.north east) {\insertdate};
+    \end{tikzpicture}%
+  \fi
+}
+
+% Display-size section titles break at spaces or CJK boundaries only, never
+% hyphenate, and never stretch inter-CJK glue. \hyphenchar\font=-1 must follow
+% the font-selecting command.
+\newcommand{\nju@displaywrap}{\hyphenchar\font=-1 \frenchspacing\xeCJKsetup{CJKglue={\hskip 0pt}}}
+
+% Section and end frames share the purple field with a faint emblem watermark.
+\newcommand{\nju@purplefield}{%
+  \fill[NJUPrimary] (current page.south west) rectangle (current page.north east);
+  \node[opacity=.07,inner sep=0pt,anchor=east] at ([xshift=.9cm]current page.east)
+    {\includegraphics[height=1.15\paperheight]{\NJUasset{nju-emblem-white.pdf}}};}
+
+\setbeamertemplate{section page}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \nju@purplefield
+    \node[text=white,align=center,text width=.86\paperwidth,
+      font=\usebeamerfont{section title}] at (current page.center)
+      {\nju@displaywrap \insertsection};
+  \end{tikzpicture}%
+}
+
+\ifnju@sectionpages
+  \AtBeginSection[]{\begin{frame}[plain,noframenumbering]\sectionpage\end{frame}}
+\fi
+
+\newcommand{\NJUtitleframe}{%
+  \begin{frame}[plain,noframenumbering]\titlepage\end{frame}}
+
+\newcommand{\NJUsectionframe}[2]{%
+  \begin{frame}[plain,noframenumbering]
+    \begin{tikzpicture}[remember picture,overlay]
+      \nju@purplefield
+      \node[text=white,align=center,text width=.86\paperwidth,
+        font=\usebeamerfont{section title}] at ([yshift=.18cm]current page.center)
+        {\nju@displaywrap #1\\[8.5pt]{\usebeamerfont{section subtitle}#2}};
+    \end{tikzpicture}
+  \end{frame}}
+
+% \NJUendframe[title]{subtitle}; the title defaults to "Thank You".
+\newcommand{\NJUendframe}[2][Thank You]{%
+  \begin{frame}[plain,noframenumbering]
+    \begin{tikzpicture}[remember picture,overlay]
+      \ifnju@background
+        % A centered purple band under the white page, as on the cover.
+        \fill[white] (current page.south west) rectangle (current page.north east);
+        \fill[NJUPrimary] ([yshift=-.20\paperheight]current page.north west) --
+          ([yshift=-.20\paperheight]current page.north east) --
+          ([yshift=-.60\paperheight]current page.north east) --
+          ([yshift=-.60\paperheight]current page.north west) -- cycle;
+        \node[inner sep=0pt,anchor=east] at ([xshift=-.72cm,yshift=.10\paperheight]current page.east)
+          {\includegraphics[height=.30\paperheight]{\NJUasset{nju-emblem-white.pdf}}};
+        \node[text=white,align=center] at ([yshift=.10\paperheight]current page.center)
+          {\usebeamerfont{end title}#1};
+        \node[text=NJUText,align=center,text width=.88\paperwidth] at ([yshift=.10\paperheight]current page.south)
+          {\usebeamerfont{end subtitle}#2};
+        \node[anchor=south west,inner sep=0pt,text=NJUMuted,font=\usebeamerfont{footline}]
+          at ([xshift=.72cm,yshift=.10cm]current page.south west) {\nju@footleft};
+        \node[anchor=south,inner sep=0pt,text=NJUMuted,font=\usebeamerfont{footline}]
+          at ([yshift=.10cm]current page.south) {\nju@footmid};
+        \node[anchor=south east,inner sep=0pt,text=NJUMuted,font=\usebeamerfont{footline}]
+          at ([xshift=-.72cm,yshift=.10cm]current page.south east) {\nju@footright};
+      \else
+        \nju@purplefield
+        \node[text=white] at ([yshift=.25cm]current page.center)
+          {\usebeamerfont{end title}#1};
+        \node[text=white!82] at ([yshift=-.52cm]current page.center)
+          {\usebeamerfont{end subtitle}#2};
+        \node[anchor=south west,inner sep=0pt,text=white!82,font=\usebeamerfont{footline}]
+          at ([xshift=.72cm,yshift=.10cm]current page.south west) {\nju@footleft};
+        \node[anchor=south,inner sep=0pt,text=white!82,font=\usebeamerfont{footline}]
+          at ([yshift=.10cm]current page.south) {\nju@footmid};
+        \node[anchor=south east,inner sep=0pt,text=white!82,font=\usebeamerfont{footline}]
+          at ([xshift=-.72cm,yshift=.10cm]current page.south east) {\nju@footright};
+      \fi
+    \end{tikzpicture}
+  \end{frame}}
+
+\newcommand{\NJUsetspeaker}[3][Speaker]{%
+  \def\nju@speakerlabel{#1}%
+  \def\nju@speakername{#2}%
+  \def\nju@speakerdetail{#3}%
+  \author{#2}%
+  \institute{#3}}
+\def\nju@speakerlabel{Speaker}
+\def\nju@speakername{\insertauthor}
+\def\nju@speakerdetail{\insertinstitute}
+
+\newcommand{\NJUspeakerblock}{%
+  \begin{minipage}{.60\paperwidth}
+    \raggedright\sffamily\njumetafont
+    \tcbox[on line,size=minimal,width=1.30cm,tcbox width=forced center,halign=center,boxrule=0pt,arc=1.5pt,outer arc=1.5pt,
+      colback=NJUAccent!14!white,coltext=NJUAccent,
+      left=.10cm,right=.10cm,top=.03cm,bottom=.03cm,
+      fontupper=\sffamily\bfseries\fontsize{6.15}{7.4}\selectfont]
+      {\nju@speakerlabel}\hspace{.18cm}\nju@speakername\\[.05cm]
+    \hspace*{1.48cm}\parbox[t]{\dimexpr.60\paperwidth-1.48cm\relax}{\raggedright
+      \color{NJUMuted}\fontsize{8.50}{11.7}\selectfont\nju@speakerdetail}
+  \end{minipage}}
+
+\newcommand{\NJUsetupfootline}[3]{%
+  \def\nju@footleft{#1}%
+  \def\nju@footmid{#2}%
+  \def\nju@footright{#3}}
+\def\nju@footleft{}
+\def\nju@footmid{}
+\def\nju@footright{}
+
+% Callouts and beamer blocks carry no fill, frame or shadow: a colored title
+% sits on a hairline whose left end is thickened, and the body is plain text.
+\tcbset{
+  nju@headed/.style={enhanced,frame hidden,interior hidden,boxrule=0pt,boxsep=0pt,arc=0pt,
+    left=0pt,right=0pt,top=4.5pt,bottom=2pt,toptitle=0pt,bottomtitle=3.2pt,lefttitle=0pt,righttitle=0pt,
+    title style={opacity=0},coltitle=#1,
+    fonttitle=\sffamily\bfseries\njubodyfont,fontupper=\sffamily\njubodyfont,
+    overlay={\draw[#1!35!white,line width=.5pt] (title.south west) -- (title.south east);
+      \draw[#1,line width=1.6pt] (title.south west) -- ([xshift=1.1cm]title.south west);},
+    before skip=3pt,after skip=9pt},
+}
+\newtcolorbox{njucallout}[2][NJUPrimary]{nju@headed=#1,title={#2}}
+\setbeamertemplate{block begin}{\begin{tcolorbox}[nju@headed=NJUPrimary,title={\insertblocktitle}]}
+\setbeamertemplate{block end}{\end{tcolorbox}}
+\setbeamertemplate{block alerted begin}{\begin{tcolorbox}[nju@headed=NJUCalloutRed,title={\insertblocktitle}]}
+\setbeamertemplate{block alerted end}{\end{tcolorbox}}
+\setbeamertemplate{block example begin}{\begin{tcolorbox}[nju@headed=NJUCalloutGold,title={\insertblocktitle}]}
+\setbeamertemplate{block example end}{\end{tcolorbox}}
+
+\newenvironment{njuquote}[1]
+  {\begin{njucallout}[NJUPrimary]{#1}}
+  {\end{njucallout}}
+\newenvironment{njuquoteblue}[1]
+  {\begin{njucallout}[NJUCalloutBlue]{#1}}
+  {\end{njucallout}}
+\newenvironment{njuquotered}[1]
+  {\begin{njucallout}[NJUCalloutRed]{#1}}
+  {\end{njucallout}}
+\newenvironment{njuquotegreen}[1]
+  {\begin{njucallout}[NJUCalloutGreen]{#1}}
+  {\end{njucallout}}
+\newenvironment{njuquotegold}[1]
+  {\begin{njucallout}[NJUCalloutGold]{#1}}
+  {\end{njucallout}}
+\newenvironment{njuquoteblack}[1]
+  {\begin{njucallout}[NJUCalloutBlack]{#1}}
+  {\end{njucallout}}
+
+\newcommand{\njuaccent}[1]{{\color{NJUAccent}\bfseries #1}}
+\newcommand{\njumuted}[1]{{\color{NJUMuted}#1}}
+
+% ---- Components shared by every style: stats, marks, chips, steps, meters.
+
+% \NJUstat[color]{figure}{label}{note}: headline number over the same rule
+% that callouts use, then a label and an optional muted note.
+\newcommand{\NJUstat}[4][NJUPrimary]{%
+  \par\noindent
+  \begin{tikzpicture}
+    \pgfmathsetlengthmacro{\nju@w}{\linewidth}
+    \node[anchor=base west,inner sep=0pt,text=#1,font=\sffamily\bfseries\fontsize{20}{21}\selectfont]
+      at (0,5pt) {#2};
+    \fill[#1!35!white] (0,-.25pt) rectangle (\nju@w,.25pt);
+    \fill[#1] (0,-.8pt) rectangle (1.1cm,.8pt);
+    \node[anchor=north west,inner sep=0pt,align=left,text width=\nju@w,text=NJUText,
+      font=\sffamily\bfseries\fontsize{7.6}{9.4}\selectfont] at (0,-4.5pt)
+      {#3\ifstrempty{#4}{}{\\[1pt]{\mdseries\fontsize{6}{7.6}\selectfont\color{NJUMuted}#4}}};
+  \end{tikzpicture}\par}
+
+% \NJUmark{text}: marker-pen highlight behind a short phrase.
+\newcommand{\NJUmark}[1]{%
+  \tikz[baseline=(m.base)]\node[inner xsep=1.2pt,inner ysep=0pt,outer sep=0pt,
+    path picture={\fill[NJUGoldLight!62]
+      ([yshift=-.20em]path picture bounding box.south west) rectangle
+      ([yshift=.40em]path picture bounding box.south east);}] (m) {\bfseries #1};}
+
+% \NJUchip[color]{text}: pill label.
+\newcommand{\NJUchip}[2][NJUPrimary]{%
+  \tikz[baseline=(c.base)]\node[fill=#1!13!white,text=#1,rounded corners=3.4pt,
+    inner xsep=4.2pt,inner ysep=1.7pt,outer sep=0pt,
+    font=\sffamily\bfseries\fontsize{6.2}{7.2}\selectfont] (c) {#2};}
+
+% \NJUsteps{a,b,c}: chevron process strip across the line, purple to gold.
+\newcommand{\NJUsteps}[1]{%
+  \par\noindent
+  \begin{tikzpicture}
+    \def\nju@n{0}%
+    \foreach \nju@s in {#1} {\xdef\nju@n{\the\numexpr\nju@n+1\relax}}
+    \pgfmathsetlengthmacro{\nju@t}{6pt}
+    \pgfmathsetlengthmacro{\nju@d}{(\linewidth-\nju@t)/\nju@n}
+    \pgfmathsetlengthmacro{\nju@h}{19pt}
+    \foreach \nju@s [count=\nju@i] in {#1} {
+      \pgfmathsetlengthmacro{\nju@x}{(\nju@i-1)*\nju@d}
+      \pgfmathsetmacro{\nju@mix}{100-78*(\nju@i-1)/max(1,\nju@n-1)}
+      \fill[NJUPrimary!\nju@mix!NJURule] (\nju@x,0) -- (\nju@x+\nju@d-2.4pt,0)
+        -- (\nju@x+\nju@d+\nju@t-2.4pt,.5*\nju@h) -- (\nju@x+\nju@d-2.4pt,\nju@h) -- (\nju@x,\nju@h)
+        \ifnum\nju@i>1 -- (\nju@x+\nju@t,.5*\nju@h)\fi -- cycle;
+      \node[text=white,inner sep=0pt,font=\sffamily\bfseries\fontsize{6.8}{8}\selectfont]
+        at (\nju@x+.5*\nju@d+.5*\nju@t,.5*\nju@h) {\nju@s};
+    }
+  \end{tikzpicture}\par}
+
+% \NJUmeter[color]{fraction}{label}{value}: labelled horizontal meter.
+\newcommand{\NJUmeter}[4][NJUPrimary]{%
+  \par\noindent
+  \begin{tikzpicture}
+    \pgfmathsetlengthmacro{\nju@w}{\linewidth}
+    \node[anchor=base west,inner sep=0pt,text=NJUText,font=\sffamily\fontsize{7}{8.4}\selectfont]
+      at (0,6.5pt) {#3};
+    \node[anchor=base east,inner sep=0pt,text=#1,font=\sffamily\bfseries\fontsize{7}{8.4}\selectfont]
+      at (\nju@w,6.5pt) {#4};
+    \fill[NJUSoft,rounded corners=1.5pt] (0,0) rectangle (\nju@w,3pt);
+    \shade[left color=#1,right color=#1!55!NJURule,rounded corners=1.5pt]
+      (0,0) rectangle ({max(3pt,#2*\nju@w)},3pt);
+  \end{tikzpicture}\par}
+
+
+\lstdefinestyle{nju}{
+  basicstyle=\ttfamily\njucodefont,
+  backgroundcolor=\color{NJUCode},
+  keywordstyle=\color{blue!70!black}\bfseries,
+  commentstyle=\color{NJUGreen},
+  stringstyle=\color{NJUOrange},
+  numberstyle=\fontsize{4.5}{5.5}\selectfont\color{NJUMuted},
+  numbers=left,
+  numbersep=7pt,
+  frame=single,
+  rulecolor=\color{NJUPrimary!45!white},
+  framerule=.4pt,
+  framesep=6pt,
+  showstringspaces=false,
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  tabsize=4
+}
+\lstset{style=nju}
+\lstdefinestyle{bash}{language=bash}
+\lstdefinestyle{c}{language=C,identifierstyle=\color{black!50!green}}
+\lstdefinestyle{cpp}{language=C++,identifierstyle=\color{black!50!green}}
+\lstdefinestyle{python}{language=Python,identifierstyle=\color{black!50!green}}
+\lstdefinestyle{latex}{language=[LaTeX]TeX}
+\lstdefinestyle{plain}{}
+
+% minimus-compatible conveniences (\code, Code, Figure, Table), defined at
+% \begin{document} and skipped when the real minimus packages are loaded.
+\AtBeginDocument{%
+\@ifundefined{code}{%
+  \newcommand{\code}[1]{$\hphantom{}$\lstinline{#1}$\hphantom{}$}%
+}{}%
+\@ifundefined{Code}{%
+  \NewDocumentEnvironment{Code}{sO{}G{plain}}{%
+    \lstset{style=#3}%
+    \ifstrempty{#2}{}{\par{\footnotesize\color{NJUMuted}#2\par}\vspace{-6pt}}%
+  }{\par}%
+}{}%
+\@ifundefined{Figure}{%
+  \NewDocumentEnvironment{Figure}{sO{}t!}{%
+    \begin{center}%
+  }{%
+    \ifstrempty{#2}{}{\par\vspace{2pt}{\footnotesize\color{NJUMuted}#2\par}}%
+    \end{center}%
+  }%
+}{}%
+\@ifundefined{Table}{%
+  \NewDocumentEnvironment{Table}{sO{}t&t&t!t!}{%
+    \ifstrempty{#2}{}{\begin{center}{\footnotesize\color{NJUMuted}#2\par}\vspace{2pt}\end{center}}%
+    \begin{center}%
+  }{%
+    \end{center}%
+  }%
+}{}%
+}
+
+\AtBeginEnvironment{frame}{\justifying}
+\mode<all>

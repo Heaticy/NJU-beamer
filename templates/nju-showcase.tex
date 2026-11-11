@@ -1,0 +1,144 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+\usepackage[UTF8,fontset=none]{ctex}
+\usepackage{booktabs}
+\usepackage{array}
+\usetheme{nju-showcase}
+
+\title[NJU-Beamer Showcase]{NJU-Beamer Showcase\\南京大学幻灯片模板 · 炫技版}
+\subtitle{渐变封面 / 章节导航 / 进度页脚 / 数据组件}
+\NJUsetspeaker[汇报人]{NJU-Beamer Team}{南京大学 \quad 某某学院}
+\date{2026年11月}
+\NJUsetupfootline{NJU-Beamer Showcase}{2026}{NJU-Beamer Team}
+
+\begin{document}
+\NJUtitleframe
+
+\section{页面骨架}
+
+\begin{frame}[t]{标题区与页脚}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.56\textwidth}
+    标题上方的小字是\NJUmark{章节面包屑}，由 \texttt{\textbackslash section} 自动生成；标题下方是紫到金的渐变分隔线。
+
+    页脚最底部是\NJUmark{全局进度条}，中间的圆点对应全部章节：已讲完的为紫色，当前章节为金色。
+
+    \begin{itemize}
+      \item 章节页自带议程：右侧列出全部章节并高亮当前位置
+      \item 封面、章节页与尾页共用深紫渐变与丝带曲线
+      \item \alert{alert} 为主题紫加粗，\textbf{textbf} 为标准加粗
+    \end{itemize}
+  \end{column}
+  \begin{column}{.40\textwidth}
+    \begin{njuquote}{使用方法}
+      \texttt{\textbackslash usetheme\{nju-showcase\}}
+
+      其余接口与 \code{nju} 主题完全相同，文稿可以直接切换。
+    \end{njuquote}
+    \NJUchip{nju} \NJUchip{nju-plain} \NJUchip{nju-report} \NJUchip[NJUCalloutGold]{nju-showcase}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\section{数据与流程}
+
+\begin{frame}[t]{关键数字}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.235\textwidth}\NJUstat{1902}{建校年份}{三江师范学堂}\end{column}
+  \begin{column}{.235\textwidth}\NJUstat[NJUCalloutGold]{4}{主题风格}{一套接口}\end{column}
+  \begin{column}{.235\textwidth}\NJUstat[NJUCalloutBlue]{16:9}{页面比例}{aspectratio=169}\end{column}
+  \begin{column}{.235\textwidth}\NJUstat[NJUCalloutGreen]{100\%}{矢量素材}{校徽、校名、北大楼}\end{column}
+\end{columns}
+
+\vspace{4pt}
+\texttt{\textbackslash NJUstat[颜色]\{数字\}\{标签\}\{备注\}} 适合放在多栏中并排展示关键数字。
+
+\NJUmeter{0.82}{进度条 \texttt{\textbackslash NJUmeter}}{82\%}
+\NJUmeter[NJUCalloutGold]{0.46}{可指定颜色}{46\%}
+\end{frame}
+
+\begin{frame}[t]{流程条与提示框}
+\NJUsteps{提出问题,建立方法,计算筛选,实验验证,器件集成}
+
+\vspace{6pt}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.32\textwidth}
+    \begin{njuquote}{强调引用}
+      彩色标题压在一条细线上，正文不带底色和边框。
+    \end{njuquote}
+    \begin{njuquotegold}{金色提示}
+      适合补充说明。
+    \end{njuquotegold}
+  \end{column}
+  \begin{column}{.32\textwidth}
+    \begin{njuquoteblue}{蓝色提示}
+      适合方法或定义。
+    \end{njuquoteblue}
+    \begin{njuquotegreen}{绿色提示}
+      适合已完成的结果。
+    \end{njuquotegreen}
+  \end{column}
+  \begin{column}{.32\textwidth}
+    \begin{njuquotered}{红色提示}
+      适合风险与局限。
+    \end{njuquotered}
+    \begin{block}{Beamer block}
+      标准 \code{block} 同样适用。
+    \end{block}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\section{图表与代码}
+
+\begin{frame}[t]{图文与表格}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.36\textwidth}
+    \begin{njuquote}{图片}
+      \begin{Figure}[北大楼剪影：\code{nju-skyline.pdf}]
+        \includegraphics[width=.92\linewidth]{\NJUasset{nju-skyline.pdf}}
+      \end{Figure}
+    \end{njuquote}
+  \end{column}
+  \begin{column}{.60\textwidth}
+    \begin{Table}[四种风格对照]
+      \footnotesize
+      \begin{tabular}{@{}lccc@{}}
+        \toprule
+        主题 & 正文背景 & 封面 & 页脚 \\
+        \midrule
+        \texttt{nju} & 校徽、北大楼、校训 & 斜切紫色 & 页码 \\
+        \texttt{nju-plain} & 无 & 斜切紫色 & 三格信息栏 \\
+        \texttt{nju-report} & 无 & 居中标题块 & 三格信息栏 \\
+        \texttt{nju-showcase} & 校徽水印 & 渐变与丝带 & 进度条 \\
+        \bottomrule
+      \end{tabular}
+    \end{Table}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t,fragile]{代码与公式}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.48\textwidth}
+    \begin{enumerate}
+      \item 编译单份文稿
+      \item 严格检查全部文稿
+    \end{enumerate}
+\begin{lstlisting}[language=bash]
+make render INPUT=templates/nju-showcase.tex
+make check
+\end{lstlisting}
+  \end{column}
+  \begin{column}{.48\textwidth}
+    \begin{njuquoteblue}{行间公式}
+      \[
+        E_{\mathrm{r}} = \min_{x\in(0,1)}
+        \Bigl[E_{\mathrm{hull}}(x) - (1-x)E_A - xE_B\Bigr]
+      \]
+    \end{njuquoteblue}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\NJUendframe{诚朴雄伟\quad 励学敦行}
+\end{document}

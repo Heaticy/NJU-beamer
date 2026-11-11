@@ -1,0 +1,157 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+\usepackage[UTF8,fontset=none]{ctex}
+\usepackage{booktabs}
+\usepackage{array}
+\usetheme{nju}
+
+\title[NJU-Beamer]{NJU-Beamer 南京大学幻灯片模板}
+\subtitle{for tutorials, reports and defenses}
+\NJUsetspeaker[汇报人]{NJU-Beamer Team}{南京大学 \quad 某某学院}
+\date{2026年11月}
+\NJUsetupfootline{NJU-Beamer}{2026}{NJU-Beamer Team}
+
+\begin{document}
+\NJUtitleframe
+
+\begin{frame}{目录}
+  \tableofcontents
+\end{frame}
+
+\section{1. 页面结构}
+
+\begin{frame}{1. 页面结构：固定标题}
+标题始终停留在页面顶部，金色分隔线下方是正文区域。正文段落之间保留 6pt 段间距，首行不缩进。
+
+右上角是南京大学校徽与校名组合，左下角是北大楼与雪松剪影，右下角是校训“诚朴雄伟 励学敦行”。
+页码位于页面底部中央。
+
+\alert{alert} 渲染主题紫色加粗，\textbf{textbf} 保持标准加粗。
+\end{frame}
+
+\section{2. 分栏与图片}
+
+\begin{frame}{2. 分栏与图片：左右分栏}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.48\textwidth}
+    左侧内容用于放置主要说明、定义或步骤。
+    \begin{itemize}
+      \item 适合双栏文字对比
+      \item 左栏作为背景、问题或约束
+    \end{itemize}
+  \end{column}
+  \begin{column}{.48\textwidth}
+    右侧内容用于放置补充说明、对比信息或结论。
+    \begin{itemize}
+      \item 适合放方案、结论或对照项
+      \item 每个条目保持短句
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2. 分栏与图片：图文分栏}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.55\textwidth}
+    图文分栏适合展示案例、截图或结果对比。图片使用 \code{keepaspectratio}，不要被强行拉伸。
+
+    \begin{Figure}[校徽：\code{nju-emblem.pdf}]
+      \includegraphics[height=.40\textheight]{\NJUasset{nju-emblem.pdf}}
+    \end{Figure}
+  \end{column}
+  \begin{column}{.40\textwidth}
+    \begin{Figure}[校名组合：\code{nju-lockup.pdf}]
+      \includegraphics[width=\linewidth]{\NJUasset{nju-lockup.pdf}}
+    \end{Figure}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2. 分栏与图片：表格}
+\begin{Table}[三线表使用 booktabs]
+  \begin{tabular}{lccc}
+    \toprule
+    主题 & 正文背景 & 封面 & 页脚 \\
+    \midrule
+    \texttt{nju} & 校徽、北大楼、校训 & 斜切紫色 & 页码 \\
+    \texttt{nju-plain} & 无 & 斜切紫色 & 三格信息栏 \\
+    \texttt{nju-report} & 无 & 居中紫色标题块 & 三格信息栏 \\
+    \bottomrule
+  \end{tabular}
+\end{Table}
+\end{frame}
+
+\section{3. 列表与引用}
+
+\begin{frame}{3. 列表与引用：有序与嵌套列表}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.48\textwidth}
+    \begin{enumerate}
+      \item 明确问题背景
+      \item 给出核心定义
+      \item 展示关键公式
+      \item 总结主要结论
+    \end{enumerate}
+  \end{column}
+  \begin{column}{.48\textwidth}
+    \begin{itemize}
+      \item 一级条目使用紫色方块
+      \begin{itemize}
+        \item 二级条目使用金色三角
+        \item 需要细讲时拆成多页
+      \end{itemize}
+      \item 避免单页塞入过长段落
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{3. 列表与引用：提示框}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.48\textwidth}
+    \begin{njuquote}{强调引用}
+      适合突出课堂提示、注意事项或阶段性结论。
+    \end{njuquote}
+    \begin{njuquotegold}{金色提示}
+      适合列出补充说明。
+    \end{njuquotegold}
+    \begin{njuquoteblue}{蓝色提示}
+      适合列出方法或定义。
+    \end{njuquoteblue}
+  \end{column}
+  \begin{column}{.48\textwidth}
+    \begin{njuquotered}{红色提示}
+      适合风险与局限。
+    \end{njuquotered}
+    \begin{njuquotegreen}{绿色提示}
+      适合已完成的结果。
+    \end{njuquotegreen}
+    \begin{block}{Beamer block}
+      标准 \code{block} 环境同样使用主题配色。
+    \end{block}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\section{4. 代码与公式}
+
+\begin{frame}[fragile]{4. 代码与公式}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.48\textwidth}
+    命令行代码适合展示安装、构建和运行步骤：
+\begin{lstlisting}[language=bash]
+make render INPUT=templates/nju.tex
+make check
+\end{lstlisting}
+  \end{column}
+  \begin{column}{.48\textwidth}
+    行间公式沿用 Latin Modern：
+    \[
+      E_{\mathrm{r}} = \min_{x\in(0,1)}
+      \Bigl[E_{\mathrm{hull}}(x) - (1-x)E_A - xE_B\Bigr]
+    \]
+  \end{column}
+\end{columns}
+\end{frame}
+
+\NJUendframe{NJU-Beamer \textcolor{NJUMuted}{/} 南京大学 \textcolor{NJUMuted}{/} 诚朴雄伟 励学敦行}
+\end{document}

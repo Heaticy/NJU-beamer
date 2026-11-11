@@ -1,0 +1,746 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+\usepackage[UTF8,fontset=none]{ctex}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[version=4]{mhchem}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,decorations.pathreplacing}
+% Midterm-Defense-showcase.tex sets \DeckTheme before reading this file.
+\providecommand{\DeckTheme}{nju}
+\usetheme{\DeckTheme}
+
+\title[硕士生中期考核答辩]{卤化物固态电解质锂金属负极双层薄膜保护层的高通量计算筛选}
+\subtitle{硕士研究生中期考核答辩}
+\NJUsetspeaker[汇报人]{程翊航}{导师：李伟 教授\quad 南京大学化学化工学院}
+\date{}
+\NJUsetupfootline{硕士研究生中期考核答辩}{南京大学化学化工学院}{程翊航}
+
+% A defense is read from the back of the room: body text one step larger
+% than the theme preset.
+\renewcommand{\njubodyfont}{\fontsize{9.6}{13.9}\selectfont}
+
+% Literature citations point to the numbered list on the reference frames.
+\renewcommand{\cite}[1]{\textsuperscript{\color{NJUMuted}[#1]}}
+\newcommand{\rf}[1]{\par\noindent\makebox[2.2em][r]{[#1]}\hspace{.6em}\ignorespaces}
+\newcommand{\refline}[1]{\par\vspace{2pt}{\scriptsize\color{NJUMuted}#1\par}}
+% Full-width tables: ragged-right paragraph columns at a compact size.
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newenvironment{decktable}
+  {\par\fontsize{8.3}{10.8}\selectfont\renewcommand{\arraystretch}{1.22}}
+  {\par}
+\newcommand{\done}{{\color{NJUCalloutGreen}\bfseries 已完成}}
+\newcommand{\doing}{{\color{NJUCalloutGold}\bfseries 进行中}}
+\newcommand{\todo}{{\color{NJUMuted}\bfseries 待启动}}
+\tikzset{
+  layer/.style={draw=white,line width=.6pt,minimum height=.62cm,text width=2.05cm,align=center,
+    font=\sffamily\small},
+  stage/.style={rounded corners=2pt,draw=NJUPrimary,line width=.6pt,fill=white,align=center,
+    font=\sffamily\footnotesize,text width=2.75cm,minimum height=1.25cm,inner sep=2pt},
+  flow/.style={-{Stealth[length=4pt]},line width=.7pt,NJUPrimary},
+}
+
+\begin{document}
+\NJUtitleframe
+
+\begin{frame}{目录}
+  \tableofcontents
+\end{frame}
+
+% ---------------------------------------------------------------------------
+\section{研究背景}
+
+\begin{frame}[t]{研究背景：锂金属全固态电池}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.55\textwidth}
+    \begin{itemize}
+      \item \alert{锂金属负极}：理论比容量 3860\,mAh\,g$^{-1}$，电位 $-3.04$\,V vs SHE，是提升全电池比能的材料基础\cite{1}
+      \item \alert{固态电解质}：以无机固体替代可燃有机液态电解液，有望同时匹配锂金属负极与高电压正极\cite{9,16}
+      \item 固态 $\neq$ 绝对安全：LLZO、非晶 \ce{Li3PS4} 内部仍观察到锂沉积，与电解质电子电导偏高直接相关\cite{7}
+    \end{itemize}
+  \end{column}
+  \begin{column}{.40\textwidth}
+    \begin{njuquote}{关键科学问题}
+      决定锂金属固态电池寿命的是\alert{锂｜固态电解质界面}：界面既要阻断电子、抑制分解，又要保持 Li$^+$ 通畅传输。
+    \end{njuquote}
+    \begin{njuquotegold}{本课题聚焦}
+      卤化物固态电解质与锂金属负极之间的\alert{薄膜保护层}。
+    \end{njuquotegold}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{研究背景：卤化物固态电解质}
+\begin{decktable}
+\begin{tabular}{@{}L{.20\textwidth}L{.44\textwidth}L{.27\textwidth}@{}}
+  \toprule
+  体系 & 关键性能 & 使用边界 \\
+  \midrule
+  \ce{Li3YCl6}（LYC）\cite{2,5} & 冷压粉体高离子电导、可形变；未涂覆 \ce{LiCoO2} 即可构建 4\,V 级固态电池 & 电导 0.51 / 1.7\,mS\,cm$^{-1}$（不同报道），各向异性 \\
+  \ce{Li2ZrCl6}（LZC）\cite{3} & 球磨样品 25\,°C 电导 0.81\,mS\,cm$^{-1}$；耐湿；原料成本 \$1.38\,m$^{-2}$（LYC 为 \$23.05\,m$^{-2}$） & 350\,°C 退火样品仅 $5.81\times10^{-6}$\,S\,cm$^{-1}$ \\
+  \ce{Li3InCl6}（LIC）\cite{4} & 水介导合成；25\,°C 电导 2.04\,mS\,cm$^{-1}$；匹配高镍正极 & 本课题作扩展探索 \\
+  \bottomrule
+\end{tabular}
+\end{decktable}
+
+\begin{itemize}
+  \item 氯化物热力学氧化稳定性高：LYC 计算窗口 0.62--4.21\,V vs Li/Li$^+$\cite{5}，可直接匹配 4\,V 级正极
+  \item 本课题以 \alert{LZC}（低成本）与 \alert{LYC}（经典体系）为目标电解质，LIC 作为扩展路线
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{研究背景：卤化物电解质对锂金属不稳定}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.56\textwidth}
+    \begin{itemize}
+      \item 原位锂沉积–XPS 与阻抗谱：\ce{Li3InCl6}、\ce{Li3YCl6} 接触锂后形成\alert{持续增长的反应层}与界面阻抗\cite{6}
+      \item 理想化净反应\cite{6}：\ce{Li3MCl6 + 3Li -> 6LiCl + M} (M = In, Y)
+      \item 本工作相图计算：
+      \begin{itemize}
+        \item $E_\mathrm{r}(\mathrm{LZC,Li}) = -0.441$\,eV/atom
+        \item $E_\mathrm{r}(\mathrm{LYC,Li}) = -0.159$\,eV/atom
+        \item 两者遇锂均分解为金属 + LiCl
+      \end{itemize}
+      \item 分解产物含金属相 → \alert{混合导电界面}，电子泄漏与阻抗持续增长
+    \end{itemize}
+  \end{column}
+  \begin{column}{.40\textwidth}
+    \centering
+    \begin{tikzpicture}[x=1cm,y=.62cm,font=\sffamily\scriptsize]
+      \fill[NJUCalloutRed!14] (-.15,0) rectangle (2.95,1.25);
+      \draw[->,NJUMuted] (-.15,0) -- (-.15,5.1) node[above] {$V$ vs Li/Li$^+$ (V)};
+      \foreach \v in {0,1,...,4} \draw[NJUMuted] (-.22,\v) -- (-.15,\v) node[left=2pt] {\v};
+      \draw[NJUCalloutRed,line width=1pt] (-.15,0) -- (2.95,0) node[right] {Li};
+      \fill[NJUPrimary] (.35,1.25) rectangle (1.05,4.46);
+      \fill[NJUPrimary!55] (1.65,.75) rectangle (2.35,4.37);
+      \node[above] at (.70,4.46) {LZC};
+      \node[above] at (2.00,4.37) {LYC};
+      \node[right,NJUPrimary] at (1.05,1.25) {1.25};
+      \node[right,NJUPrimary] at (2.35,.75) {0.75};
+      \node[NJUCalloutRed,align=center] at (1.4,.42) {还原分解区};
+    \end{tikzpicture}
+    \refline{柱：本工作巨势相图计算的电化学窗口；锂金属位于 0\,V，远低于还原极限}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{研究背景：现有负极保护策略}
+\begin{decktable}
+\begin{tabular}{@{}L{.22\textwidth}L{.37\textwidth}L{.33\textwidth}@{}}
+  \toprule
+  策略 & 可借鉴点 & 局限 \\
+  \midrule
+  Li–In 合金负极\cite{3,5} & 降低负极化学势，早期 LYC / LZC 电池常用 & 约 0.6\,V vs Li/Li$^+$，牺牲电压与比能 \\
+  LiF / \ce{Li3N} 人工 SEI\cite{10,11} & 电子绝缘；\ce{Li3N} 致密无针孔膜导 Li$^+$ & 多数验证于液态体系；性能依赖厚度 \\
+  LiPON 薄膜\cite{26,27} & 经典薄膜电解质，对锂长期可用 & 依赖动力学钝化，非本征热力学稳定 \\
+  ALD \ce{Al2O3} / Li–Al–O\cite{1,12} & 超薄、共形，可在锂表面沉积 & 膜厚与导 Li$^+$ 阻力需权衡\cite{10} \\
+  \ce{Li6PS5Cl} 夹层\cite{13} & Li｜LPSC｜LYC 双电解质，界面阻电子 & LPSC 自身与锂反应，靠钝化 \\
+  双层涂层计算设计\cite{14} & 两层分担两侧稳定性要求 & 正极侧先例，负极侧缺系统筛选 \\
+  \bottomrule
+\end{tabular}
+\end{decktable}
+
+高通量方法先例：Aykol 等从 >130{,}000 种含氧材料筛选正极涂层\cite{15}；Xiao 等将相稳定、窗口、双侧相容与离子／电子传输纳入固态电池涂层筛选\cite{16}。
+\end{frame}
+
+% ---------------------------------------------------------------------------
+\section{拟解决的科学难题与产业技术问题}
+
+\begin{frame}[t]{拟解决的科学难题与产业技术问题}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.48\textwidth}
+    \begin{njuquote}{科学难题 1：稳定性解耦}
+      单一材料难以同时承受锂端的高锂化学势与卤化物端的化学约束；Li｜A｜B｜SSE 能否通过功能分工扩大解空间，并保证三个界面均可接受？
+    \end{njuquote}
+    \begin{njuquote}{科学难题 2：保护与传输的矛盾}
+      同时抑制还原分解与电子泄漏，又不显著增加串联 Li$^+$ 迁移阻力，避免“稳定但堵锂”。
+    \end{njuquote}
+  \end{column}
+  \begin{column}{.48\textwidth}
+    \begin{njuquoteblue}{科学难题 3：筛选可靠性}
+      反应能接近零的临界候选受 PBE 误差、晶相与数据库能量口径影响；需要更高精度方法量化不确定性。
+    \end{njuquoteblue}
+    \begin{njuquotegold}{产业技术问题：薄膜可实现性}
+      计算优选的 A｜B 能否转化为连续、低针孔、低阻、热预算受控的薄膜，并在沉积／退火后保持分层？这是晶圆级微电池界面工程的共性问题。
+    \end{njuquotegold}
+  \end{column}
+\end{columns}
+\end{frame}
+
+% ---------------------------------------------------------------------------
+\section{研究思路}
+
+\begin{frame}[t]{研究思路：Li｜A｜B｜SSE 双层功能分工}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.50\textwidth}
+    \centering
+    \begin{tikzpicture}[node distance=0pt]
+      \node[layer,fill=black!55,text=white,minimum height=3.3cm,text width=1.15cm] (li) {Li\\金属};
+      \node[layer,fill=NJUPrimary!70,text=white,minimum height=3.3cm,text width=1.35cm,right=of li] (a) {A\\贴 Li};
+      \node[layer,fill=NJUGold!80,minimum height=3.3cm,text width=1.35cm,right=of a] (b) {B\\贴 SSE};
+      \node[layer,fill=NJUCalloutBlue!55,minimum height=3.3cm,text width=1.85cm,right=of b] (sse) {SSE\\LZC / LYC};
+      \foreach \x/\l in {li/1,a/2,b/3} \node[font=\sffamily\scriptsize\bfseries,NJUPrimary,above=2pt] at (\x.north east) {\l};
+      \draw[-{Stealth},line width=.9pt,NJUCalloutGreen] ([yshift=-1.25cm]sse.east) -- ([yshift=-1.25cm]li.west)
+        node[pos=.93,below,font=\sffamily\scriptsize] {Li$^+$};
+      \draw[-{Stealth},line width=.9pt,NJUCalloutRed] ([yshift=1.25cm]li.east) -- ([yshift=1.25cm]b.west)
+        node[pos=1,right,font=\sffamily\scriptsize] {e$^-$ $\times$};
+    \end{tikzpicture}
+    \refline{界面 1：Li｜A\quad 界面 2：A｜B\quad 界面 3：B｜SSE}
+  \end{column}
+  \begin{column}{.46\textwidth}
+    \begin{itemize}
+      \item \alert{A 层}只要求对锂稳定：$E_\mathrm{r}(\mathrm{Li},A) \ge$ 阈值
+      \item \alert{B 层}只要求对 SSE 稳定：$E_\mathrm{r}(B,\mathrm{SSE}) \ge$ 阈值
+      \item 三界面相容：$\min[E_\mathrm{r}(\mathrm{Li},A), E_\mathrm{r}(A,B), E_\mathrm{r}(B,\mathrm{SSE})]$
+      \item 电子阻隔：至少一层 $E_g \ge 1.0$\,eV
+      \item 窗口接力：$\Delta V_{AB}>0$ 且 $\Delta V_{B,\mathrm{SSE}}>0$
+      \item 两层均导 Li$^+$：BVSE $E_\mathrm{3D}$ 上限
+    \end{itemize}
+    双层设计思想借鉴正极双层涂层\cite{14}，本课题将其系统用于卤化物电解质的锂负极侧。
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{研究思路：技术路线}
+\centering
+\begin{tikzpicture}[node distance=.42cm]
+  \node[stage] (s1) {\textbf{数据底座}\\MP 热力学 + VASP 自算 SSE};
+  \node[stage,right=of s1] (s2) {\textbf{第一轮初筛}\\七规则双层组合};
+  \node[stage,right=of s2] (s3) {\textbf{第二轮复筛}\\严格档 + 单层对照};
+  \node[stage,right=of s3] (s4) {\textbf{可合成性分层}\\实验梯队};
+  \node[stage,below=.85cm of s4,draw=NJUGold,line width=1pt] (s5) {\textbf{高精度校准}\\PBC-GEBF};
+  \node[stage,left=of s5,draw=NJUGold,line width=1pt] (s6) {\textbf{迁移势垒}\\VASP CI-NEB};
+  \node[stage,left=of s6,draw=NJUMuted,dashed] (s7) {\textbf{实验验证}\\薄膜制备与测试};
+  \node[stage,left=of s7,draw=NJUMuted,dashed] (s8) {\textbf{器件集成}\\晶圆级微电池};
+  \draw[flow] (s1) -- (s2); \draw[flow] (s2) -- (s3); \draw[flow] (s3) -- (s4);
+  \draw[flow] (s4) -- (s5); \draw[flow] (s5) -- (s6); \draw[flow] (s6) -- (s7); \draw[flow] (s7) -- (s8);
+  \begin{scope}[on background layer]
+    \node[fit=(s1)(s4),inner sep=5pt,rounded corners=3pt,fill=NJUCalloutGreen!12] (done) {};
+    \node[fit=(s5)(s6),inner sep=5pt,rounded corners=3pt,fill=NJUGold!15] (next) {};
+  \end{scope}
+  \node[anchor=south west,font=\sffamily\scriptsize,NJUCalloutGreen] at (done.north west) {已完成：21{,}712 → 196 对 / 61 材料};
+  \node[anchor=north east,font=\sffamily\scriptsize,NJUGold!80!black] at (next.south east) {下一步：高精度计算筛选};
+  \node[anchor=north west,font=\sffamily\scriptsize,NJUMuted] at ([yshift=-5pt]s8.south west) {远期：实验与集成（待设计）};
+\end{tikzpicture}
+\end{frame}
+
+% ---------------------------------------------------------------------------
+\section{已取得的研究进展}
+
+\begin{frame}[t]{进展总览：从 21{,}712 个含锂体系到 61 种材料}
+\NJUsteps{MP 含锂体系,母池,七规则双层初筛,严格档复筛,可合成性分层}
+
+\vspace{8pt}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.19\textwidth}\NJUstat{21{,}712}{含锂体系}{Materials Project}\end{column}
+  \begin{column}{.19\textwidth}\NJUstat{1{,}860}{母池}{$E_\mathrm{hull}\le5$\,meV/atom}\end{column}
+  \begin{column}{.19\textwidth}\NJUstat[NJUCalloutBlue]{6{,}501}{LZC 通过组}{LYC：8{,}074}\end{column}
+  \begin{column}{.19\textwidth}\NJUstat[NJUCalloutGold]{196}{对 A｜B 组合}{严格档}\end{column}
+  \begin{column}{.19\textwidth}\NJUstat[NJUCalloutGreen]{61}{种材料}{实验梯队约 25 种}\end{column}
+\end{columns}
+
+\vspace{6pt}
+三级收缩：\NJUmark{母池 → 七规则双层初筛 → 严格档复筛}，交付 196 对组合／61 种材料，作为 Li$^+$ 迁移 NEB 计算与实验验证的输入清单。同口径单层筛选近乎归零，是双层路线的直接依据。
+\end{frame}
+
+\begin{frame}[t]{进展 1：数据底座与性质计算}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.52\textwidth}
+    {\footnotesize
+    \begin{tabular}{@{}ll@{}}
+      \toprule
+      性质 & 方法 \\
+      \midrule
+      电化学窗口 & 巨势相图（pymatgen） \\
+      界面反应能 & 封闭两相混合 InterfacialReactivity \\
+      Li$^+$ 迁移势垒 & BVSE（BVEL13k 查表 + softBV） \\
+      弹性张量 & MatTen 等变图神经网络 \\
+      电子阻隔 & PBE 带隙（MP） \\
+      SSE 能量 & VASP 自算 + MP2020 Cl 修正 \\
+      \bottomrule
+    \end{tabular}}
+  \end{column}
+  \begin{column}{.44\textwidth}
+    \begin{itemize}
+      \item MP 153{,}167 条 GGA/GGA+U 热力学数据，已含 MP2020 校正，\alert{不可二次校正}（早期二次校正致 $\sim$0.5\,eV/atom 偏差，已全量重跑）
+      \item SSE 自算能量补 Cl 修正 $-0.614$\,eV/Cl：LZC $E_\mathrm{hull}=0$，LYC 22.7\,meV/atom，与可合成性吻合
+      \item 窗口方法经 LiF、\ce{Li3PS4}、LLZO、\ce{Li3N}、LiCl 五材料文献基准验证，偏差 $<0.4$\,V
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{进展 2：第一轮七规则双层初筛}
+\begin{decktable}
+\begin{tabular}{@{}lL{.50\textwidth}r@{}}
+  \toprule
+  规则 & 内容 & LZC 结果 \\
+  \midrule
+  1 母池 & 含 Li、$E_\mathrm{hull}\le 5$\,meV/atom，不设带隙门槛（覆盖合金／低带隙） & 1{,}860 \\
+  2 A/B 切池 & A：$E_\mathrm{r}(\mathrm{Li},A)\ge-0.10$；B：$E_\mathrm{r}(B,\mathrm{SSE})\ge-0.10$\,eV/atom & 340 × 793 \\
+  3 电子阻隔 & $E_g^A\ge1.0$ \textbf{或} $E_g^B\ge1.0$\,eV & -- \\
+  4 三界面相容 & $\min[E_\mathrm{r}(\mathrm{Li},A),E_\mathrm{r}(A,B),E_\mathrm{r}(B,\mathrm{SSE})]\ge-0.10$ & -- \\
+  5 窗口接力 & $\Delta V_{AB}>0$ 且 $\Delta V_{B,\mathrm{SSE}}>0$（不要求三重交叠） & -- \\
+  6 锂传输 & 两层 BVSE $E_\mathrm{3D}\le1.0$\,eV & -- \\
+  7 分组 & 通过／待核／未通过 & \alert{6{,}501} \\
+  \bottomrule
+\end{tabular}
+\end{decktable}
+
+LYC 路线 340 × 1{,}070 组合中通过 \alert{8{,}074} 对；两个 SSE 均通过的去重化学式对 4{,}993 对。通过组再按 Aykol 加权和\cite{15}排名，得双 SSE 短名单 81 对。
+\end{frame}
+
+\begin{frame}[t]{进展 3：逐级淘汰}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.58\textwidth}
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=.84\linewidth,height=5.9cm,
+        xbar,bar width=5pt,
+        xmode=log,xmin=100,xmax=1e6,log basis x=10,
+        symbolic y coords={严格档,BVSE $E_\mathrm{3D}\le1.0$,窗口交叠,电子阻隔,三界面 $E_\mathrm{r}$,数据齐全,全部组合},
+        ytick=data,y dir=normal,
+        tick label style={font=\sffamily\scriptsize},
+        xlabel={组合数（对数轴）},xlabel style={font=\sffamily\scriptsize},
+        legend style={font=\sffamily\scriptsize,at={(.5,1.02)},anchor=south,draw=none,legend columns=2,
+          /tikz/every even column/.append style={column sep=8pt}},
+        area legend,
+        axis line style={NJUMuted},
+        enlarge y limits=.10,
+      ]
+        \addplot[fill=NJUPrimary,draw=none] coordinates {
+          (269602,全部组合) (61494,数据齐全) (26656,三界面 $E_\mathrm{r}$) (26656,电子阻隔)
+          (25358,窗口交叠) (6501,BVSE $E_\mathrm{3D}\le1.0$) (302,严格档)};
+        \addplot[fill=NJUGold,draw=none] coordinates {
+          (363715,全部组合) (75612,数据齐全) (36611,三界面 $E_\mathrm{r}$) (36608,电子阻隔)
+          (34859,窗口交叠) (8074,BVSE $E_\mathrm{3D}\le1.0$) (465,严格档)};
+        \legend{LZC,LYC}
+      \end{axis}
+    \end{tikzpicture}
+  \end{column}
+  \begin{column}{.38\textwidth}
+    \begin{itemize}
+      \item 数据缺失主要来自合金层（BVSE 不适用）与 $E_\mathrm{3D}$ 缺失，单列\alert{待核组}，不当作淘汰
+      \item 三界面反应能与 B 层传输是主要淘汰原因
+      \item 6{,}501 是有意保留的宽网：73\% 通过组合的 $E_\mathrm{worst}$ 位于 $-0.11\sim-0.05$ 压线区，真正推荐靠严格档收网
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{进展 4：第二轮严格档复筛 → 196 对 / 61 材料}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.47\textwidth}
+    {\footnotesize
+    \begin{tabular}{@{}lr@{}}
+      \toprule
+      条件（LZC） & 结果 \\
+      \midrule
+      $E_\mathrm{worst}\ge-0.03$ \& $E_\mathrm{max}\le0.6$\,eV & 302 对 \\
+      + 三界面同阈 $E_\mathrm{worst}\ge-0.02$ & $\downarrow$ \\
+      + A 层还原窗口 $V_\mathrm{red}^A\le0.1$\,V & \alert{196 对} \\
+      去重化学式 & 183 对 \\
+      涉及材料（唯一 mp-id） & \alert{61 种} \\
+      \bottomrule
+    \end{tabular}}
+    \refline{$V_\mathrm{red}^A\le0.1$\,V 卡掉 \ce{Li5AlO4} 四对（$V_\mathrm{red}=0.25$\,V）}
+    \vspace{2pt}
+    架构：双绝缘 181 对，绝缘 A／导电 B 13 对，导电 A／绝缘 B 2 对。
+  \end{column}
+  \begin{column}{.49\textwidth}
+    \begin{njuquote}{A 池 17 种（贴 Li）}
+      LiCl、LiBr、LiI、LiF；\ce{Li2O}、\ce{Li2S}、\ce{Li2Te}、\ce{Li3N}；\ce{LiREO2}（RE = Y, Ho, Er, Tm, Lu）；\ce{Li3ScN2}、\ce{Li3YN2}、\ce{Li3BN2}
+    \end{njuquote}
+    \begin{njuquotegold}{B 池 46 种（贴 SSE）}
+      LiCl / LiBr 领衔；硫酸盐 \ce{Li2SO4}、\ce{Li2SeO4}；氟化复盐 \ce{Li3AlF6}、\ce{LiYF4}、\ce{Li4ZrF8} 等；Ga/In 卤化物；\ce{Li3InCl6}、\ce{Li3ErBr6}
+    \end{njuquotegold}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{进展 5：单层对照——双层必要性的量化证据}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.50\textwidth}
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=\linewidth,height=5.6cm,
+        ybar,bar width=16pt,
+        ymin=0,ymax=230,
+        symbolic x coords={LZC 单层,LYC 单层,双 SSE 交集,LZC 双层},
+        xtick=data,
+        tick label style={font=\sffamily\scriptsize},
+        ylabel={严格档通过数},ylabel style={font=\sffamily\scriptsize},
+        nodes near coords,nodes near coords style={font=\sffamily\small\bfseries},
+        axis line style={NJUMuted},
+        enlarge x limits=.18,
+      ]
+        \addplot[fill=NJUPrimary,draw=none] coordinates {(LZC 单层,2) (LYC 单层,0) (双 SSE 交集,0) (LZC 双层,196)};
+      \end{axis}
+    \end{tikzpicture}
+    \refline{同一数据、同一性质指标、严格档 $-0.02$\,eV/atom}
+  \end{column}
+  \begin{column}{.46\textwidth}
+    \begin{itemize}
+      \item 单层严格档：LZC 仅 LiCl、LiBr 两种；LYC 与双 SSE 交集为 \alert{0}
+      \item LZC 下 152 种材料对 SSE 足够稳定，但同时要求对 Li 稳定后只剩 2 种
+      \item 1{,}860 全母池复跑结论一致
+      \item 单层永远收敛于卤素锂盐；\alert{双层释放}稀土氧化物、硫酸盐、氟化复盐的化学多样性
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{进展 6：代表性候选组合（LZC 严格档）}
+\begin{decktable}
+\begin{tabular}{@{}l@{\hspace{2.2em}}r@{\hspace{2.2em}}r@{\hspace{2.2em}}r@{\hspace{2.2em}}r@{\hspace{2.2em}}r@{\hspace{2.2em}}l@{}}
+  \toprule
+  A｜B & $E_g^A$ & $E_g^B$ & $E_\mathrm{worst}$ & $E_\mathrm{max}$ & $\Delta V_\mathrm{min}$ & 架构 \\
+  \midrule
+  LiI｜LiCl & 4.38 & 6.65 & 0.000 & 0.264 & 3.07 & 双绝缘 \\
+  LiCl｜\ce{LiBF4} & 6.65 & 8.25 & 0.000 & 0.264 & 2.32 & 双绝缘 \\
+  \ce{Li3N}｜LiCl & 0.98 & 6.65 & $-0.007$ & 0.264 & 1.13 & 导电 A／绝缘 B \\
+  LiCl｜\ce{Na3Li3Al2F12} & 6.65 & 7.09 & $-0.018$ & 0.264 & 3.21 & 双绝缘 \\
+  \ce{Li2Te}｜LiCl & 2.49 & 6.65 & 0.000 & 0.283 & 2.09 & 双绝缘 \\
+  \ce{Li2O}｜LiCl & 4.90 & 6.65 & 0.000 & 0.303 & 3.07 & 双绝缘 \\
+  LiBr｜LiCl & 4.94 & 6.65 & 0.000 & 0.312 & 3.07 & 双绝缘 \\
+  \bottomrule
+\end{tabular}
+\end{decktable}
+\refline{按 $E_\mathrm{max}=\max(E_\mathrm{3D}^A,E_\mathrm{3D}^B)$ 升序；$E_g$、$E_\mathrm{max}$ 单位 eV，$E_\mathrm{worst}$ 单位 eV/atom，$\Delta V_\mathrm{min}$ 单位 V；$E_g$ 为 PBE 带隙}
+
+\begin{itemize}
+  \item 双 SSE 交集最稳健：\alert{LiI｜LiCl、LiBr｜LiCl、\ce{Li2O}｜LiCl}，B 层收敛于 LiCl
+  \item Pareto 前沿：LZC 27 对、LYC 25 对，双 SSE 共同前沿 10 对
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{进展 7：可合成性分层与首轮实验候选}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.50\textwidth}
+    \begin{itemize}
+      \item 61 种材料中 38 种有 ICSD 实验背书，$E_\mathrm{hull}$ 全部 $\le5$\,meV/atom
+      \item \alert{P0 实验梯队约 25 种}：商购锂盐（LiCl、LiBr、LiI、LiF、\ce{Li2O}、\ce{Li2S}、\ce{Li2Te}、\ce{Li3N}、\ce{LiBF4}）+ 硫酸盐 + \ce{LiREO2} + \ce{Li3InCl6} + 氟化复盐
+      \item 剔除 14 种：稀土硝酸盐、Co 变价氧化物、低带隙簇合物；剩 148 对可实验组合
+      \item 排名前 15 的组合全部由 P0 材料构成，热蒸发／ALD／溅射／溶液法均有先例
+    \end{itemize}
+  \end{column}
+  \begin{column}{.46\textwidth}
+    \begin{njuquotegreen}{首轮实验候选}
+      \ce{Li2O}｜LiCl（互混风险最低）\\
+      LiF｜LiCl（电子阻隔最强）\\
+      LiI｜LiCl（势垒最低，兼作卤素互混观察组）
+    \end{njuquotegreen}
+    \begin{njuquotered}{集成风险}
+      LiCl–LiBr–LiI 彼此完全互溶，退火或长循环会使双层梯度均匀化；需控制热预算或选阴离子差异大的对照组。
+    \end{njuquotered}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{进展小结：里程碑与当前局限}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.55\textwidth}
+    {\fontsize{8.3}{10.8}\selectfont\renewcommand{\arraystretch}{1.22}
+    \begin{tabular}{@{}L{.76\linewidth}r@{}}
+      \toprule
+      里程碑 & 状态 \\
+      \midrule
+      数据库搭建 + 文献回测（134 条，屏障型 6/6 召回） & \done \\
+      七规则双层初筛 + 排名 & \done \\
+      二次筛选（阈值／MatTen／反应产物／Pareto） & \done \\
+      严格档复筛 → 196 对 / 61 材料 & \done \\
+      单层对照与可合成性分层 & \done \\
+      61 项体相结构优化（NEB 前置） & \doing \\
+      空位 + CI-NEB 势垒验证 & \todo \\
+      \bottomrule
+    \end{tabular}}
+  \end{column}
+  \begin{column}{.42\textwidth}
+    \begin{njuquotered}{当前计算的局限}
+      \begin{itemize}
+        \item BVSE 势垒相对 NEB 系统偏高 0.2–0.3\,eV，不能换算电导率
+        \item PBE 带隙系统低估
+        \item $-0.02$\,eV/atom 为动力学容忍口径，非严格热力学稳定
+        \item MatTen 为机器学习预测；体积变化为体相加和近似
+      \end{itemize}
+    \end{njuquotered}
+  \end{column}
+\end{columns}
+\end{frame}
+
+% ---------------------------------------------------------------------------
+\section{下一步研究计划}
+
+\begin{frame}[t]{下一步：为什么需要高精度计算}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.50\textwidth}
+    \begin{itemize}
+      \item 严格档候选的反应能集中在 $0\sim-0.02$\,eV/atom，\alert{与 PBE 误差同量级}，排序可能被泛函误差改写
+      \item 电子阻隔判据依赖 PBE 带隙，系统性低估
+      \item BVSE 只给出 D 级传输证据
+      \item 周期性高水平电子相关计算（MP2、CCSD(T)）对含数十至数百原子的晶胞代价过高
+    \end{itemize}
+  \end{column}
+  \begin{column}{.46\textwidth}
+    \begin{njuquote}{思路}
+      利用课题组发展的 \alert{PBC-GEBF} 片段化方法，把周期体系的高水平计算拆为一系列嵌入子体系计算，对临界候选做\alert{精度校准}，检验筛选结论的稳健性。
+    \end{njuquote}
+    \begin{njuquoteblue}{对象}
+      P0 实验梯队材料及其前列 A｜B 组合；以 LiCl 等已有 PBC-GEBF 先例的离子晶体为基准起点\cite{20}。
+    \end{njuquoteblue}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{课题组方法：GEBF 基本原理}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.44\textwidth}
+    \centering
+    \begin{tikzpicture}[scale=.62]
+      \foreach \i in {0,...,7} \foreach \j in {0,...,4} {
+        \pgfmathtruncatemacro{\s}{mod(\i+\j,2)}
+        \ifnum\s=0
+          \fill[NJUCalloutBlue!60] (\i,\j) circle (.30);
+        \else
+          \fill[NJUGold!85] (\i,\j) circle (.18);
+        \fi}
+      \draw[NJUPrimary,line width=1pt,rounded corners=3pt] (2.55,1.55) rectangle (4.45,2.45);
+      \draw[NJUPrimary,line width=.8pt,dashed,rounded corners=4pt] (1.45,.45) rectangle (5.55,3.55);
+      \node[font=\sffamily\scriptsize,NJUPrimary,inner sep=1pt] at (3.5,4.85) {子体系 $m$ = 中心片段 + 距离 $\xi$ 内邻近片段};
+      \node[font=\sffamily\scriptsize,NJUMuted,inner sep=1pt] at (3.5,-.85) {子体系外原子 → 背景点电荷 $Q_A$};
+    \end{tikzpicture}
+  \end{column}
+  \begin{column}{.52\textwidth}
+    \begin{itemize}
+      \item 将大体系划分为片段；以中心片段及给定距离内的邻近片段构成子体系
+      \item 子体系置于其余原子的\alert{背景点电荷}中，计入远程静电与极化
+      \item 由嵌入子体系能量组装总能量\cite{17,24}：
+    \end{itemize}
+    \[
+      E_\mathrm{GEBF} \approx \sum_m C_m \tilde{E}_m
+      - \Bigl(\sum_m C_m - 1\Bigr)\sum_{A<B}\frac{Q_A Q_B}{R_{AB}}
+    \]
+    \refline{$C_m$：子体系组装系数；$\tilde{E}_m$：嵌入子体系能量；$Q_A$：背景电荷}
+    \begin{itemize}
+      \item 子体系可独立并行计算，可调用不同从头算／DFT 层级与现有分子量子化学程序（LSQC）\cite{23,24}
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{课题组方法：PBC-GEBF 周期体系扩展}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.56\textwidth}
+    \begin{itemize}
+      \item \alert{2015 原始扩展}：晶格能由一系列嵌入非周期子体系能量得到，用\alert{场补偿}处理无限晶体的长程静电；代价随晶胞内分子数线性增长\cite{18}
+      \item 2021 综述：分子晶体、液体的结构、晶格能与 IR／Raman／NMR 谱\cite{19}
+      \item \alert{2022 离子晶体}：PBC-GEBF-MP2 预测 \alert{LiCl}、NaCl、KCl 结构接近 X 射线结果，$\omega$B97X-D 对结构与晶格能表现满意\cite{20}
+      \item 2023 结构优化：312 原子／晶胞 DF-MP2 级结构；864 原子／晶胞 DFT 级 IR 谱\cite{21}
+      \item 2026 基于模板的自动分片算法\cite{22}
+    \end{itemize}
+  \end{column}
+  \begin{column}{.40\textwidth}
+    \begin{njuquotegold}{与本课题的连接点}
+      LiCl 出现在 196 对中的 61 对（45 对作 A、16 对作 B），已有 PBC-GEBF-MP2 基准，是方法迁移的天然起点。
+    \end{njuquotegold}
+    \begin{njuquotered}{需要适配}
+      离子晶体片段电荷与边界、Madelung 长程场、过渡金属价态与自旋、金属 Li／Zr／Y 产物参考态、二维薄膜与界面周期性。
+    \end{njuquotered}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{下一步：基于 PBC-GEBF 的高精度计算筛选方案}
+\begin{decktable}
+\begin{tabular}{@{}L{.14\textwidth}L{.21\textwidth}L{.37\textwidth}L{.17\textwidth}@{}}
+  \toprule
+  阶段 & 对象 & 方法 & 产出 \\
+  \midrule
+  1 方法基准 & LiCl、LiF、\ce{Li2O} 等 P0 锂盐 & 周期 PBE vs PBC-GEBF-PBE 分离分片误差；再比较 MP2／双杂化泛函 & 误差预算 \\
+  2 反应能校准 & 前列 A｜B 及竞争产物 & 一致参考态下 PBC-GEBF 高水平反应能 & 排名稳健性 \\
+  3 电子阻隔 & 前列 A、B 层 & 嵌入簇 ΔSCF 局域能隙，与 HSE 参照比较\cite{5} & 带隙校正 \\
+  4 迁移势垒 & P0 约 25 种材料 & VASP CI-NEB，端点／鞍点高层级单点校准 & NEB 级 $E_a$ \\
+  5 界面模型 & 首轮实验候选 & 显式 A｜B、B｜SSE 界面嵌入模型 & 界面能、产物 \\
+  \bottomrule
+\end{tabular}
+\end{decktable}
+
+\begin{itemize}
+  \item VASP 前置：61 项体相优化输入已备齐 → 空位形成能 → IDPP 初路径 → CI-NEB
+  \item 优先计算 P0 梯队；裁剪硝酸盐、簇合物、Co 氧化物 14 项，节省约 1/4 算力
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{下一步：实验验证（待设计）}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.32\textwidth}
+    \begin{njuquotegreen}{候选组合}
+      \ce{Li2O}｜LiCl\\
+      LiF｜LiCl\\
+      LiI｜LiCl
+    \end{njuquotegreen}
+  \end{column}
+  \begin{column}{.32\textwidth}
+    \begin{njuquote}{薄膜制备}
+      \vspace*{2.4cm}
+    \end{njuquote}
+  \end{column}
+  \begin{column}{.32\textwidth}
+    \begin{njuquote}{表征与电化学测试}
+      \vspace*{2.4cm}
+    \end{njuquote}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{研究计划与时间安排}
+\centering
+\begin{tikzpicture}[x=1.22cm,y=.66cm,font=\sffamily\footnotesize]
+  \foreach \m/\l in {0/2026.12,2/2027.02,4/2027.04,6/2027.06,8/2027.08,10/2027.10,12/2027.12,14/2028.02,16/2028.04}
+    {\draw[NJUMuted!40] (\m*.5,.6) -- (\m*.5,-5.6); \node[NJUMuted,font=\sffamily\scriptsize] at (\m*.5,1.0) {\l};}
+  \foreach \y/\a/\b/\t/\c in {
+      0/0/4/{61 项体相优化 + 空位／CI-NEB}/NJUPrimary,
+      -1/1/6/{PBC-GEBF 离子晶体基准（LiCl 等）}/NJUGold,
+      -2/4/10/{前列 A｜B 反应能与能隙高精度校准}/NJUGold,
+      -3/8/12/{显式界面模型}/NJUCalloutBlue,
+      -4/8/14/{实验验证（方案待设计）}/NJUMuted,
+      -5/13/17/{论文撰写与答辩}/NJUCalloutGreen}
+    {\fill[\c,rounded corners=1.5pt] (\a*.5,\y-.30) rectangle (\b*.5,\y+.30);
+     \node[anchor=west,text=NJUText] at (\b*.5+.08,\y) {\t};}
+\end{tikzpicture}
+\refline{时间节点为拟定计划，按计算进展与实验条件调整}
+\end{frame}
+
+% ---------------------------------------------------------------------------
+\section{与集成电路产业的相关性}
+
+\begin{frame}[t]{晶圆电池：片上集成的全固态薄膜微电池}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.52\textwidth}
+    \begin{itemize}
+      \item 借助薄膜／微纳加工在晶圆上批量制备、与芯片或微系统集成的全固态微电池\cite{29}
+      \item ORNL 1993 年以 N$_2$ 气氛溅射 \ce{Li3PO4} 得到 LiPON，25\,°C 电导 $2\times10^{-6}$\,S\,cm$^{-1}$，奠定薄膜锂电池基础\cite{26,27}
+      \item 2026 年已报道 \alert{200\,mm 晶圆级}热 ALD 超薄 LiPON\cite{30}
+      \item 面临面容量、界面稳定与规模化制造约束\cite{29}
+    \end{itemize}
+  \end{column}
+  \begin{column}{.44\textwidth}
+    \centering
+    \begin{tikzpicture}[font=\sffamily\scriptsize,node distance=0pt]
+      \node[draw=white,fill=black!12,minimum width=5.2cm,minimum height=.52cm] (enc) {封装层};
+      \node[draw=white,fill=black!50,text=white,minimum width=5.2cm,minimum height=.52cm,below=of enc] (li) {锂金属负极};
+      \node[draw=white,fill=NJUPrimary!70,text=white,minimum width=5.2cm,minimum height=.44cm,below=of li] (a) {A 层};
+      \node[draw=white,fill=NJUGold!80,minimum width=5.2cm,minimum height=.44cm,below=of a] (b) {B 层};
+      \node[draw=white,fill=NJUCalloutBlue!55,minimum width=5.2cm,minimum height=.58cm,below=of b] (sse) {薄膜固态电解质};
+      \node[draw=white,fill=NJUCalloutRed!45,minimum width=5.2cm,minimum height=.58cm,below=of sse] (cat) {正极 + 集流体};
+      \node[draw=white,fill=NJUMuted!45,minimum width=5.2cm,minimum height=.58cm,below=of cat] (beol) {CMOS 后道互连（BEOL）};
+      \node[draw=white,fill=black!70,text=white,minimum width=5.2cm,minimum height=.62cm,below=of beol] (si) {硅晶圆 / 器件层};
+      \draw[decorate,decoration={brace,amplitude=3pt},NJUPrimary,line width=.7pt]
+        (a.north east) -- (b.south east) node[midway,right=4pt,align=left,text=NJUPrimary] {本课题};
+    \end{tikzpicture}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{产业现状：芯片级固态储能}
+\begin{decktable}
+\begin{tabular}{@{}L{.25\textwidth}L{.37\textwidth}L{.30\textwidth}@{}}
+  \toprule
+  企业／产品 & 技术路线 & 面向场景 \\
+  \midrule
+  STMicroelectronics EnFilm\cite{31} & \ce{LiCoO2}｜LiPON｜Li 全固态薄膜电池 & 可充电薄膜电池 \\
+  Ilika Stereax\cite{32} & 无液体／聚合物的固态微电池 & 植入医疗、可穿戴、工业 IoT \\
+  Cymbet EnerChip\cite{33} & 薄膜固态，可选裸片或 SMT 封装 & SRAM、RTC、MCU 待机保持 \\
+  ITEN\cite{34} & 全陶瓷、堆叠电极，QFN 封装 & IoT、可穿戴、后备电源 \\
+  TDK CeraCharge\cite{35} & 多层陶瓷芯片，氧化物电解质，SMT 兼容 & IoT、能量采集、RTC 后备 \\
+  \bottomrule
+\end{tabular}
+\end{decktable}
+
+\begin{itemize}
+  \item 现有产品以 LiPON 薄膜或氧化物陶瓷为主；卤化物电解质尚未进入芯片级储能，\alert{锂负极界面}是其走向薄膜器件的前置问题
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{与集成电路产业方向的结合点}
+\begin{columns}[T,onlytextwidth]
+  \begin{column}{.48\textwidth}
+    \begin{njuquote}{工艺共性}
+      磁控溅射、热／电子束蒸发、ALD 既是薄膜微电池工具链，也是微电子薄膜制造的标准工艺\cite{29,30}；保护层为纳米级薄膜，厚度、共形覆盖与针孔控制是共同问题。
+    \end{njuquote}
+    \begin{njuquotered}{集成约束}
+      CMOS 后道集成温度上限 $<400$\,°C\cite{28}；还需评估卤素残留、金属污染与正极结晶热预算。
+    \end{njuquotered}
+  \end{column}
+  \begin{column}{.48\textwidth}
+    \begin{njuquoteblue}{应用场景}
+      IoT 与能量采集传感节点、RTC／SRAM 掉电保持与 MCU 后备电源、可穿戴与植入医疗\cite{32,33,35}。
+    \end{njuquoteblue}
+    \begin{njuquotegold}{政策与定位}
+      国发〔2020〕8 号支持集成电路关键材料、先进封装测试等方向\cite{36}。本课题为微系统储能提供\alert{低阻、低电子泄漏}的界面材料方案。
+    \end{njuquotegold}
+  \end{column}
+\end{columns}
+\end{frame}
+
+% ---------------------------------------------------------------------------
+\section{总结}
+
+\begin{frame}[t]{总结}
+\begin{enumerate}
+  \item \textbf{问题}：卤化物固态电解质（LZC、LYC）对锂金属热力学不稳定，界面分解生成混合导电层
+  \item \textbf{思路}：Li｜A｜B｜SSE 双层功能分工，把“对 Li 稳定”与“对 SSE 稳定”拆给两层
+  \item \textbf{进展}：七规则初筛 + 严格档复筛，从 21{,}712 个含锂体系收敛到 \alert{196 对组合／61 种材料}；同口径单层近乎归零，量化证明双层必要性；完成可合成性分层与首轮实验候选
+  \item \textbf{计划}：以课题组 \alert{PBC-GEBF} 方法校准临界候选的反应能与能隙，结合 CI-NEB 验证迁移势垒；实验方案待设计
+  \item \textbf{意义}：面向晶圆级全固态微电池的锂负极界面工程，服务集成电路片上储能需求
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[t]{参考文献（1）}
+\fontsize{7}{10}\selectfont\setlength{\parskip}{0pt}
+\rf{1}L. Chen \textit{et al.}, J. Mater. Chem. A \textbf{5}, 12297 (2017). doi:10.1039/C7TA03116E
+\rf{2}T. Asano \textit{et al.}, Adv. Mater. \textbf{30}, 1803075 (2018). doi:10.1002/adma.201803075
+\rf{3}K. Wang \textit{et al.}, Nat. Commun. \textbf{12}, 4410 (2021). doi:10.1038/s41467-021-24697-2
+\rf{4}X. Li \textit{et al.}, Angew. Chem. Int. Ed. \textbf{58}, 16427 (2019). doi:10.1002/anie.201909805
+\rf{5}S. Wang \textit{et al.}, Angew. Chem. Int. Ed. \textbf{58}, 8039 (2019). doi:10.1002/anie.201901938
+\rf{6}L. M. Riegger \textit{et al.}, Angew. Chem. Int. Ed. \textbf{60}, 6718 (2021). doi:10.1002/anie.202015238
+\rf{7}F. Han \textit{et al.}, Nat. Energy \textbf{4}, 187 (2019). doi:10.1038/s41560-018-0312-z
+\rf{8}Y. Zhu, X. He, Y. Mo, ACS Appl. Mater. Interfaces \textbf{7}, 23685 (2015). doi:10.1021/acsami.5b07517
+\rf{9}W. D. Richards \textit{et al.}, Chem. Mater. \textbf{28}, 266 (2016). doi:10.1021/acs.chemmater.5b04082
+\rf{10}H. Zhou \textit{et al.}, J. Power Sources \textbf{450}, 227632 (2020). doi:10.1016/j.jpowsour.2019.227632
+\rf{11}Y. Li \textit{et al.}, ACS Cent. Sci. \textbf{4}, 97 (2018). doi:10.1021/acscentsci.7b00480
+\rf{12}M. Xie \textit{et al.}, Adv. Funct. Mater. \textbf{30}, 1905949 (2020). doi:10.1002/adfm.201905949
+\rf{13}C. Wang \textit{et al.}, Sci. Adv. \textbf{7}, eabh1896 (2021). doi:10.1126/sciadv.abh1896
+\rf{14}C. Wang, K. Aoyagi, T. Mueller, J. Mater. Chem. A \textbf{9}, 23206 (2021). doi:10.1039/D1TA04987A
+\rf{15}M. Aykol \textit{et al.}, Nat. Commun. \textbf{7}, 13779 (2016). doi:10.1038/ncomms13779
+\rf{16}Y. Xiao \textit{et al.}, Joule \textbf{3}, 1252 (2019). doi:10.1016/j.joule.2019.02.006
+\rf{17}W. Li, S. Li, Y. Jiang, J. Phys. Chem. A \textbf{111}, 2193 (2007). doi:10.1021/jp067721q
+\rf{18}T. Fang, W. Li, F. Gu, S. Li, J. Chem. Theory Comput. \textbf{11}, 91 (2015). doi:10.1021/ct500833k
+\end{frame}
+
+\begin{frame}[t]{参考文献（2）}
+\fontsize{7}{10}\selectfont\setlength{\parskip}{0pt}
+\rf{19}W. Li, H. Dong, J. Ma, S. Li, Acc. Chem. Res. \textbf{54}, 169 (2021). doi:10.1021/acs.accounts.0c00580
+\rf{20}Y. Li \textit{et al.}, J. Comput. Chem. \textbf{43}, 704 (2022). doi:10.1002/jcc.26828
+\rf{21}B. Hong, T. Fang, W. Li, S. Li, J. Chem. Phys. \textbf{158}, 044117 (2023). doi:10.1063/5.0137072
+\rf{22}X. Wang \textit{et al.}, J. Chem. Phys. \textbf{164}, 064103 (2026). doi:10.1063/5.0306116
+\rf{23}W. Li, C. Chen, D. Zhao, S. Li, Int. J. Quantum Chem. \textbf{115}, 641 (2015). doi:10.1002/qua.24831
+\rf{24}S. Li, W. Li, J. Ma, Acc. Chem. Res. \textbf{47}, 2712 (2014). doi:10.1021/ar500038z
+\rf{26}J. B. Bates \textit{et al.}, J. Power Sources \textbf{43}, 103 (1993). doi:10.1016/0378-7753(93)80106-Y
+\rf{27}J. B. Bates \textit{et al.}, Solid State Ionics \textbf{135}, 33 (2000). doi:10.1016/S0167-2738(00)00327-1
+\rf{28}J. Zhu \textit{et al.}, Nat. Nanotechnol. \textbf{18}, 456 (2023). doi:10.1038/s41565-023-01375-6
+\rf{29}M. Zheng \textit{et al.}, Nano-Micro Lett. \textbf{18}, 159 (2026). doi:10.1007/s40820-025-02002-w
+\rf{30}S. Poulet \textit{et al.}, ACS Appl. Electron. Mater. \textbf{8}, 3115 (2026). doi:10.1021/acsaelm.6c00069
+\rf{31}STMicroelectronics, EFL700A39 EnFilm datasheet, DocID17370 Rev 5 (2014).
+\rf{32}Ilika, Stereax solid state batteries. \url{https://www.ilika.com/micro-solid-state-batteries}
+\rf{33}Cymbet, EnerChip CBC012 datasheet, DS-72-02 Rev A.
+\rf{34}ITEN, FAQ. \url{https://www.iten.com/resources/faq}
+\rf{35}TDK Electronics, CeraCharge rechargeable multilayer ceramic chips, PPD ML 11/24 (2024).
+\rf{36}国务院，新时期促进集成电路产业和软件产业高质量发展若干政策，国发〔2020〕8 号 (2020).
+\rf{--}本工作筛选数据：\url{https://github.com/Cyh7723/shaixuan}
+\end{frame}
+
+\NJUendframe[谢谢！]{敬请各位老师批评指正}
+\end{document}
